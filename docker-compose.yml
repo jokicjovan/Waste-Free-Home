@@ -1,0 +1,43 @@
+version: '3'
+services:
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: mqtt_broker
+    networks:
+      - home_network
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./MqttBroker/config:/mosquitto/config
+      - ./MqttBroker/data:/mosquitto/data
+      - ./MqttBroker/log:/mosquitto/log
+
+  fastapi_hub:
+    image: tiangolo/uvicorn-gunicorn-fastapi:python3.8
+    container_name: fastapi_hub
+    networks:
+      - home_network
+    ports:
+      - "8000:80"
+    volumes:
+      - ./Hub:/app
+    depends_on:
+      - mosquitto
+    command: bash -c "pip install --no-cache-dir -r /app/requirements.txt && \
+                      uvicorn main:app --host 0.0.0.0 --port 80"
+
+  fastapi_server:
+    image: tiangolo/uvicorn-gunicorn-fastapi:python3.8
+    container_name: fastapi_server
+    networks:
+      - server_network
+    ports:
+      - "9000:80"
+    volumes:
+      - ./Server:/app
+    command: bash -c "pip install --no-cache-dir -r /app/requirements.txt && \
+                      uvicorn main:app --host 0.0.0.0 --port 80"
+
+networks:
+  home_network:
+  server_network:
