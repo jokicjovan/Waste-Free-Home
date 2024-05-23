@@ -1,5 +1,35 @@
-version: '3'
 services:
+  database:
+    image: postgres:latest
+    container_name: postgresql_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: WasteFreeHome
+    networks:
+      - server_network
+    ports:
+      - "5432:5432"
+    volumes:
+      - DBdata:/var/lib/postgresql/data
+    tty: true
+    
+  server:
+    image: tiangolo/uvicorn-gunicorn-fastapi:python3.10
+    container_name: fastapi_server
+    networks:
+      - server_network
+    ports:
+      - "9000:8000"
+    volumes:
+      - ./Server/app:/app
+      - ./Server/requirements.txt:/app/requirements.txt
+    depends_on:
+      - database
+    command: bash -c "pip install --no-cache-dir -r requirements.txt && \
+                      cd .. && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
   mosquitto:
     image: eclipse-mosquitto:latest
     container_name: mqtt_broker
@@ -12,31 +42,24 @@ services:
       - ./MqttBroker/data:/mosquitto/data
       - ./MqttBroker/log:/mosquitto/log
 
-  fastapi_hub:
-    image: tiangolo/uvicorn-gunicorn-fastapi:python3.8
+  hub:
+    image: tiangolo/uvicorn-gunicorn-fastapi:python3.10
     container_name: fastapi_hub
     networks:
       - home_network
     ports:
-      - "8000:80"
+      - "8000:8000"
     volumes:
-      - ./Hub:/app
+      - ./Hub/app:/app
+      - ./Hub/requirements.txt:/app/requirements.txt
     depends_on:
       - mosquitto
-    command: bash -c "pip install --no-cache-dir -r /app/requirements.txt && \
-                      uvicorn main:app --host 0.0.0.0 --port 80"
+      - server
+    command: bash -c "pip install --no-cache-dir -r requirements.txt && \
+                      cd .. && uvicorn app.main:app --host 0.0.0.0 --port 8000"
 
-  fastapi_server:
-    image: tiangolo/uvicorn-gunicorn-fastapi:python3.8
-    container_name: fastapi_server
-    networks:
-      - server_network
-    ports:
-      - "9000:80"
-    volumes:
-      - ./Server:/app
-    command: bash -c "pip install --no-cache-dir -r /app/requirements.txt && \
-                      uvicorn main:app --host 0.0.0.0 --port 80"
+volumes:
+  DBdata:
 
 networks:
   home_network:
