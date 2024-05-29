@@ -32,8 +32,8 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 
-def get_devices(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Device).offset(skip).limit(limit).all()
+def get_user_devices(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+    return db.query(models.Device).filter(models.Device.owner_id == user_id).offset(skip).limit(limit).all()
 
 
 def create_user_device(db: Session, device: schemas.DeviceCreate, user_id: int):

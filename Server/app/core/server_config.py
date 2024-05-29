@@ -1,9 +1,10 @@
 import logging
+import secrets
 from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    secret_key: str = "YOUR_SECRET_KEY"
+    secret_key: str = secrets.token_urlsafe(32)
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
 
