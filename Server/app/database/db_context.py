@@ -1,11 +1,3 @@
-from app.database.db_config import Base, SessionLocal, engine
-
-Base.metadata.create_all(bind=engine)
+from app.database.db_config import SessionLocal
 
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
