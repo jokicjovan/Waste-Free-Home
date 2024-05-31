@@ -39,7 +39,17 @@ class UserCreate(UserBase):
 class User(UserBase):
     id: int
     is_active: bool
+    role: str
     devices: list[Device] = []
+
+    class Config:
+        from_attributes = True
+
+
+class Admin(UserBase):
+    id: int
+    is_active: bool
+    role: str
 
     class Config:
         from_attributes = True

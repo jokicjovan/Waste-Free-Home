@@ -1,11 +1,12 @@
 from fastapi import FastAPI
 
-from app.routers.auth_router import authRouter
-from app.routers.devices_router import devicesRouter
-from app.routers.users_router import usersRouter
-
+from app.routers.admin_router import admin_router
+from app.routers.auth_router import auth_router
+from app.routers.device_router import device_router
+from app.routers.user_router import user_router
 
 app = FastAPI()
-app.include_router(authRouter)
-app.include_router(usersRouter)
-app.include_router(devicesRouter)
+app.include_router(auth_router)
+app.include_router(admin_router)
+app.include_router(user_router)
+app.include_router(device_router)
