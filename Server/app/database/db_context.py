@@ -1,3 +1,3 @@
-from app.database.db_config import SessionLocal
+from app.database.db_config import postgres_session_local
 
 

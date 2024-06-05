@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
-from app.database.db_config import Base, engine
+from app.database.db_config import Base, postgres_engine
 
 
 class BaseUser(Base):
@@ -43,4 +43,4 @@ class Device(Base):
     owner = relationship("User", back_populates="devices")
 
 
-Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=postgres_engine)

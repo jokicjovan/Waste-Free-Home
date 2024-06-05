@@ -5,17 +5,16 @@ from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.server_config import settings
-from app.database.db_config import get_db
+from app.database.db_config import get_postgres_db
 from app.security.token_service import create_access_token
 from app.services.base_user_service import authenticate_base_user
 from app.models.schemas import Token
 
 auth_router = APIRouter()
-route_base = "/api/auth"
 
 
-@auth_router.post(route_base + "/login", tags=["Auth"], response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+@auth_router.post("/api/auth/login", tags=["Auth"], response_model=Token)
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_postgres_db)):
     user = authenticate_base_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
