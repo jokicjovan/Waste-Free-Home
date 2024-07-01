@@ -2,11 +2,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.databases.postgres_config import get_postgres_db
+from app.databases.postgres import get_postgres_db
 from app.models import schemas
 from app.models.enums import Role
 from app.models.schemas import Admin
-from app.security.authorization import get_user_dependency
+from app.security.authorization import user_dependency
 from app.services import base_user_service, admin_service
 
 admin_router = APIRouter()
@@ -14,7 +14,7 @@ admin_router = APIRouter()
 
 @admin_router.get("/api/admins", tags=["Admins"], response_model=list[schemas.Admin])
 def read_all_admins(
-        current_user: Annotated[Admin, Depends(get_user_dependency([Role.ADMIN]))],
+        current_user: Annotated[Admin, Depends(user_dependency([Role.ADMIN]))],
         skip: int = 0,
         limit: int = 100,
         db: Session = Depends(get_postgres_db)):

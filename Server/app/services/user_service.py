@@ -28,9 +28,9 @@ def get_user_devices(db: Session, user_id: UUID, skip: int = 0, limit: int = 100
 
 def create_user_device(db: Session, device: schemas.DeviceCreate, user_id: UUID):
     if device.type == DeviceType.THERMOMETER:
-        db_device = models.WasteSorter(owner_id=user_id, **device.dict(exclude={'type'}))
+        db_device = models.Thermometer(owner_id=user_id, **device.model_dump(exclude={'type'}))
     elif device.type == DeviceType.WASTE_SORTER:
-        db_device = models.Thermometer(owner_id=user_id, **device.dict(exclude={'type'}))
+        db_device = models.WasteSorter(owner_id=user_id, **device.model_dump(exclude={'type'}))
     else:
         return None
     db.add(db_device)

@@ -1,11 +1,10 @@
 from typing import Annotated, List
 from uuid import UUID
-
 from fastapi import Depends, status, HTTPException
 from jwt import InvalidTokenError
 from sqlalchemy.orm import Session
 
-from app.databases.postgres_config import get_postgres_db
+from app.databases.postgres import get_postgres_db
 from app.models.enums import Role
 from app.models.schemas import TokenData, User
 from app.security.tokens import oauth2_scheme, decode_access_token
@@ -42,7 +41,7 @@ async def get_current_active_user(current_user: Annotated[User, Depends(get_curr
     return current_user
 
 
-def get_user_dependency(required_roles: List[Role]):
+def user_dependency(required_roles: List[Role]):
     def role_checker(
             current_user: Annotated[User, Depends(get_current_active_user)]
     ):
@@ -56,9 +55,9 @@ def get_user_dependency(required_roles: List[Role]):
     return role_checker
 
 
-def get_device_dependency(device_id: UUID,
-                          current_user: Annotated[User, Depends(get_current_active_user)],
-                          db: Session = Depends(get_postgres_db)):
+def device_dependency(device_id: UUID,
+                      current_user: Annotated[User, Depends(get_current_active_user)],
+                      db: Session = Depends(get_postgres_db)):
     device = base_device_service.get_device(db, device_id)
     if device is None or device.owner_id != current_user.id:
         raise HTTPException(

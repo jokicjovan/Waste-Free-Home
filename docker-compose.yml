@@ -1,7 +1,7 @@
 services:
   database:
     image: postgres:latest
-    container_name: postgresql_db
+    container_name: postgres_db
     restart: always
     environment:
       POSTGRES_USER: admin
@@ -12,8 +12,26 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - DBdata:/var/lib/postgresql/data
+      - PostgresData:/var/lib/postgresql/database
+  
+  time_series_database:
+    image: timescale/timescaledb:latest-pg16
+    container_name: timescale_time_series_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: WasteFreeHomeTimeSeries
+    networks:
+      - server_network
+    depends_on:
+      - database
+    ports:
+      - "5433:5432"
+    volumes:
+      - TimescaleData:/var/lib/postgresql/data
     tty: true
+
     
   server:
     build:
@@ -30,6 +48,7 @@ services:
       - ./Server/.env:/Server/.env
     depends_on:
       - database
+      - time_series_database
 
   mosquitto:
     image: eclipse-mosquitto:latest
@@ -61,7 +80,8 @@ services:
       - server
 
 volumes:
-  DBdata:
+  PostgresData:
+  TimescaleData:
 
 networks:
   home_network:

@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+from app.databases.timescale import get_timescale_db
 from app.routers.admin_router import admin_router
 from app.routers.auth_router import auth_router
 from app.routers.device_router import device_router

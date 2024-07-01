@@ -1,19 +1,20 @@
 import uuid
 
 from sqlalchemy import Boolean, Column, ForeignKey, String, Enum, UUID
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, declarative_base
 
-from app.databases.postgres_config import Base, postgres_engine
 from app.models.enums import DeviceType, Role
 
+postgres_base = declarative_base()
 
-class BaseUser(Base):
+
+class BaseUser(postgres_base):
     __tablename__ = "users"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
-    is_active = Column(Boolean, default=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, nullable=False)
+    email = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False)
 
     role = Column(Enum(Role), nullable=False)
     __mapper_args__ = {
@@ -34,13 +35,13 @@ class Admin(BaseUser):
     }
 
 
-class BaseDevice(Base):
+class BaseDevice(postgres_base):
     __tablename__ = "devices"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    title = Column(String, index=True)
-    description = Column(String, index=True)
-    owner_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, nullable=False)
+    title = Column(String, nullable=False)
+    description = Column(String, nullable=True)
+    owner_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     owner = relationship("User", back_populates="devices")
 
     type = Column(Enum(DeviceType), nullable=False)
@@ -59,6 +60,3 @@ class WasteSorter(BaseDevice):
     __mapper_args__ = {
         'polymorphic_identity': 'WASTE_SORTER'
     }
-
-
-Base.metadata.create_all(bind=postgres_engine)

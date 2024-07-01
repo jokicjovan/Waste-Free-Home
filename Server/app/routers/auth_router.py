@@ -4,8 +4,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.core.server_config import settings
-from app.databases.postgres_config import get_postgres_db
+from app.config.server_config import settings
+from app.databases.postgres import get_postgres_db
 from app.security.tokens import create_access_token
 from app.services.base_user_service import authenticate_base_user
 from app.models.schemas import Token
