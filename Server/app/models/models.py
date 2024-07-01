@@ -1,18 +1,21 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+import uuid
+
+from sqlalchemy import Boolean, Column, ForeignKey, String, Enum, UUID
 from sqlalchemy.orm import relationship
 
-from app.database.db_config import Base, postgres_engine
+from app.databases.postgres_config import Base, postgres_engine
+from app.models.enums import DeviceType, Role
 
 
 class BaseUser(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
 
-    role = Column(String)
+    role = Column(Enum(Role), nullable=False)
     __mapper_args__ = {
         'polymorphic_on': role
     }
@@ -20,27 +23,42 @@ class BaseUser(Base):
 
 class User(BaseUser):
     __mapper_args__ = {
-        'polymorphic_identity': 'user'
+        'polymorphic_identity': 'USER'
     }
-
-    devices = relationship("Device", back_populates="owner")
+    devices = relationship("BaseDevice", back_populates="owner")
 
 
 class Admin(BaseUser):
     __mapper_args__ = {
-        'polymorphic_identity': 'admin'
+        'polymorphic_identity': 'ADMIN'
     }
 
 
-class Device(Base):
+class BaseDevice(Base):
     __tablename__ = "devices"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String, index=True)
     description = Column(String, index=True)
-    owner_id = Column(Integer, ForeignKey("users.id"))
-
+    owner_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
     owner = relationship("User", back_populates="devices")
+
+    type = Column(Enum(DeviceType), nullable=False)
+    __mapper_args__ = {
+        'polymorphic_on': type
+    }
+
+
+class Thermometer(BaseDevice):
+    __mapper_args__ = {
+        'polymorphic_identity': 'THERMOMETER'
+    }
+
+
+class WasteSorter(BaseDevice):
+    __mapper_args__ = {
+        'polymorphic_identity': 'WASTE_SORTER'
+    }
 
 
 Base.metadata.create_all(bind=postgres_engine)

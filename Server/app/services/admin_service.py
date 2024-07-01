@@ -1,10 +1,12 @@
+from uuid import UUID
+
 from sqlalchemy.orm import Session
 
 from app.models import schemas, models
-from app.security.password_service import get_password_hash
+from app.security.passwords import get_password_hash
 
 
-def get_admin(db: Session, admin_id: int):
+def get_admin(db: Session, admin_id: UUID):
     return db.query(models.Admin).filter(models.Admin.id == admin_id).first()
 
 

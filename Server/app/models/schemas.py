@@ -1,5 +1,7 @@
+from uuid import UUID
 from pydantic import BaseModel
-from typing import Optional
+
+from app.models.enums import DeviceType, Role
 
 
 class Token(BaseModel):
@@ -8,12 +10,13 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    email: Optional[str] = None
+    email: str | None = None
 
 
 class DeviceBase(BaseModel):
     title: str
-    description: str | None = None
+    description: str = ""
+    type: DeviceType
 
 
 class DeviceCreate(DeviceBase):
@@ -21,25 +24,26 @@ class DeviceCreate(DeviceBase):
 
 
 class Device(DeviceBase):
-    id: int
-    owner_id: int
+    id: UUID
+    owner_id: UUID
 
     class Config:
         from_attributes = True
 
 
 class UserBase(BaseModel):
+    id: UUID
     email: str
+    is_active: bool
+    role: Role
 
 
-class UserCreate(UserBase):
+class UserCreate(BaseModel):
+    email: str
     password: str
 
 
 class User(UserBase):
-    id: int
-    is_active: bool
-    role: str
     devices: list[Device] = []
 
     class Config:
@@ -47,9 +51,6 @@ class User(UserBase):
 
 
 class Admin(UserBase):
-    id: int
-    is_active: bool
-    role: str
 
     class Config:
         from_attributes = True

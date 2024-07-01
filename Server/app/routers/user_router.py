@@ -2,18 +2,19 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.database.db_config import get_postgres_db
+from app.databases.postgres_config import get_postgres_db
 from app.models import schemas
+from app.models.enums import Role
 from app.models.models import User
-from app.security.auth_service import get_user_dependency
+from app.security.authorization import get_user_dependency
 from app.services import user_service, base_user_service
 
 user_router = APIRouter()
 
 
 @user_router.get("/api/users", tags=["Users"], response_model=list[schemas.User])
-def read_users(
-        current_user: Annotated[User, Depends(get_user_dependency(["admin"]))],
+def read_all_users(
+        current_user: Annotated[User, Depends(get_user_dependency([Role.ADMIN]))],
         skip: int = 0,
         limit: int = 100,
         db: Session = Depends(get_postgres_db)):
@@ -32,8 +33,8 @@ def create_user(
 
 
 @user_router.get("/api/users/me", tags=["Users"], response_model=schemas.User)
-def read_user(
-        current_user: Annotated[User, Depends(get_user_dependency(["user"]))],
+def read_my_info(
+        current_user: Annotated[User, Depends(get_user_dependency([Role.USER]))],
         db: Session = Depends(get_postgres_db)):
     user = user_service.get_user(db, user_id=current_user.id)
     if user is None:
