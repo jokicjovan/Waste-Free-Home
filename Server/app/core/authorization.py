@@ -4,10 +4,10 @@ from fastapi import Depends, status, HTTPException
 from jwt import InvalidTokenError
 from sqlalchemy.orm import Session
 
-from app.databases.postgres import get_postgres_db
-from app.models.enums import Role
-from app.models.schemas import TokenData, User
-from app.security.tokens import oauth2_scheme, decode_access_token
+from app.db.postgres import get_postgres_db
+from app.entities.enums import Role
+from app.entities.schemas import TokenData, RegularUser
+from app.core.tokens import oauth2_scheme, decode_access_token
 from app.services import base_device_service
 from app.services.base_user_service import get_base_user_by_email
 
@@ -35,7 +35,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],
     return user
 
 
-async def get_current_active_user(current_user: Annotated[User, Depends(get_current_user)]):
+async def get_current_active_user(current_user: Annotated[RegularUser, Depends(get_current_user)]):
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
@@ -43,7 +43,7 @@ async def get_current_active_user(current_user: Annotated[User, Depends(get_curr
 
 def user_dependency(required_roles: List[Role]):
     def role_checker(
-            current_user: Annotated[User, Depends(get_current_active_user)]
+            current_user: Annotated[RegularUser, Depends(get_current_active_user)]
     ):
         if current_user.role not in required_roles:
             raise HTTPException(
@@ -56,7 +56,7 @@ def user_dependency(required_roles: List[Role]):
 
 
 def device_dependency(device_id: UUID,
-                      current_user: Annotated[User, Depends(get_current_active_user)],
+                      current_user: Annotated[RegularUser, Depends(get_current_active_user)],
                       db: Session = Depends(get_postgres_db)):
     device = base_device_service.get_device(db, device_id)
     if device is None or device.owner_id != current_user.id:

@@ -2,11 +2,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.databases.postgres import get_postgres_db
-from app.models import schemas
-from app.models.enums import Role
-from app.models.schemas import Admin
-from app.security.authorization import user_dependency
+from app.db.postgres import get_postgres_db
+from app.entities import schemas
+from app.entities.enums import Role
+from app.entities.schemas import Admin
+from app.core.authorization import user_dependency
 from app.services import base_user_service, admin_service
 
 admin_router = APIRouter()

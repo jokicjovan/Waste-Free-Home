@@ -1,8 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.config.server_config import settings
-from app.models.models import postgres_base
+from app.core.config import settings
+from app.entities.models import postgres_base
 
 POSTGRES_DATABASE_URL = (
     f"postgresql://{settings.postgres_user}:{settings.postgres_password}@"

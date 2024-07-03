@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from app.models import models
-from app.security.passwords import verify_password
+from app.entities import models
+from app.core.passwords import verify_password
 
 
 def authenticate_base_user(db: Session, email: str, password: str):
@@ -14,4 +14,4 @@ def authenticate_base_user(db: Session, email: str, password: str):
 
 
 def get_base_user_by_email(db: Session, email: str):
-    return db.query(models.BaseUser).filter(models.User.email == email).first()
+    return db.query(models.BaseUser).filter(models.BaseUser.email == email).first()

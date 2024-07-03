@@ -1,9 +1,8 @@
 from uuid import UUID
-
 from sqlalchemy.orm import Session
 
-from app.models import schemas, models
-from app.security.passwords import get_password_hash
+from app.core.passwords import get_password_hash
+from app.entities import schemas, models
 
 
 def get_admin(db: Session, admin_id: UUID):

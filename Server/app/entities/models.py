@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy import Boolean, Column, ForeignKey, String, Enum, UUID
 from sqlalchemy.orm import relationship, declarative_base
 
-from app.models.enums import DeviceType, Role
+from app.entities.enums import DeviceType, Role
 
 postgres_base = declarative_base()
 
@@ -22,9 +22,9 @@ class BaseUser(postgres_base):
     }
 
 
-class User(BaseUser):
+class RegularUser(BaseUser):
     __mapper_args__ = {
-        'polymorphic_identity': 'USER'
+        'polymorphic_identity': 'REGULAR_USER'
     }
     devices = relationship("BaseDevice", back_populates="owner")
 
@@ -42,7 +42,7 @@ class BaseDevice(postgres_base):
     title = Column(String, nullable=False)
     description = Column(String, nullable=True)
     owner_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
-    owner = relationship("User", back_populates="devices")
+    owner = relationship("RegularUser", back_populates="devices")
 
     type = Column(Enum(DeviceType), nullable=False)
     __mapper_args__ = {

@@ -1,8 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.config.server_config import settings
-from app.models.time_series_models import timescale_base
+from app.core.config import settings
+from app.entities.time_series_models import timescale_base
 
 TIMESCALE_DATABASE_URL = (
     f"postgresql://{settings.timescale_user}:{settings.timescale_password}@"
