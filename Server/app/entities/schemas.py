@@ -1,3 +1,4 @@
+import datetime
 from uuid import UUID
 from pydantic import BaseModel
 
@@ -55,9 +56,17 @@ class Admin(UserBase):
         from_attributes = True
 
 
-class ThermometerRecord(BaseModel):
+class BaseRecord(BaseModel):
+    timestamp: datetime.datetime | None = None
+
+
+class ThermometerRecord(BaseRecord):
     temperature: float
 
 
-class WasteSorterWasteRecord(BaseModel):
+class WasteSorterRecycleRecord(BaseRecord):
     waste_type: WasteType
+
+
+class WasteSorterLevelRecord(BaseRecord):
+    level: float

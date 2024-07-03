@@ -1,8 +1,8 @@
 from uuid import UUID
+from sqlalchemy.orm import Session
 
 from app.entities import schemas, models
 from app.core.passwords import get_password_hash
-from sqlalchemy.orm import Session
 
 
 def get_user(db: Session, user_id: UUID):

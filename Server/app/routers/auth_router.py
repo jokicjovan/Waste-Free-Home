@@ -11,9 +11,10 @@ from app.services.base_user_service import authenticate_base_user
 from app.entities.schemas import Token
 
 auth_router = APIRouter()
+auth_router_root_path = "/API/auth"
 
 
-@auth_router.post("/api/auth/token", tags=["Auth"], response_model=Token)
+@auth_router.post(auth_router_root_path + "/token", tags=["Auth"], response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_postgres_db)):
     user = authenticate_base_user(db, form_data.username, form_data.password)
     if not user:

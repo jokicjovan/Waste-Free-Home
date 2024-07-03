@@ -32,25 +32,3 @@ def create_user_device(db: Session, device: schemas.DeviceCreate, user_id: UUID)
     db.refresh(db_device)
     return db_device
 
-
-def record_device_data(models_db: Session, time_series_db: Session, device_id: UUID, record_body):
-    device = get_device(models_db, device_id)
-    if device.type == DeviceType.THERMOMETER:
-        schema = schemas.ThermometerRecord
-        model_class = time_series_models.ThermometerRecord
-    elif device.type == DeviceType.WASTE_SORTER:
-        schema = schemas.WasteSorterWasteRecord
-        model_class = time_series_models.WasteSorterWasteRecord
-    else:
-        return None
-
-    try:
-        schema_instance = schema(**record_body.model_dump())
-    except ValidationError as e:
-        return None
-
-    record = model_class(device_id=device_id, **schema_instance.model_dump())
-    time_series_db.add(record)
-    time_series_db.commit()
-    time_series_db.refresh(record)
-    return record

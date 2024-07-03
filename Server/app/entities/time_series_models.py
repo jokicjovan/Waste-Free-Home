@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Float, Enum, TIMESTAMP, func
+from sqlalchemy import Column, Float, Enum, TIMESTAMP, func, CheckConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import declarative_base
 
@@ -15,9 +15,21 @@ class ThermometerRecord(timescale_base):
     temperature = Column(Float, nullable=False)
 
 
-class WasteSorterWasteRecord(timescale_base):
-    __tablename__ = "waste_sorter_waste"
+class WasteSorterRecycleRecord(timescale_base):
+    __tablename__ = "waste_sorter_recycle"
 
     timestamp = Column(TIMESTAMP, primary_key=True, server_default=func.now())
     device_id = Column(UUID(as_uuid=True), index=True, unique=False, nullable=False)
     waste_type = Column(Enum(WasteType), nullable=False)
+
+
+class WasteSorterLevelRecord(timescale_base):
+    __tablename__ = "waste_sorter_level"
+
+    timestamp = Column(TIMESTAMP, primary_key=True, server_default=func.now())
+    device_id = Column(UUID(as_uuid=True), index=True, unique=False, nullable=False)
+    level = Column(Float, nullable=False)
+
+    __table_args__ = (
+        CheckConstraint('level >= 0.0 AND level <= 100.0', name='waste_level_range'),
+    )

@@ -10,9 +10,10 @@ from app.core.authorization import user_dependency
 from app.services import base_user_service, admin_service
 
 admin_router = APIRouter()
+admin_router_root_path = "/API/admins"
 
 
-@admin_router.get("/api/admins", tags=["Admins"], response_model=list[schemas.Admin])
+@admin_router.get(admin_router_root_path, tags=["Admins"], response_model=list[schemas.Admin])
 def read_all_admins(
         current_user: Annotated[Admin, Depends(user_dependency([Role.ADMIN]))],
         skip: int = 0,
@@ -22,7 +23,7 @@ def read_all_admins(
     return admins
 
 
-@admin_router.post("/api/admins", tags=["Admins"], response_model=schemas.Admin)
+@admin_router.post(admin_router_root_path, tags=["Admins"], response_model=schemas.Admin)
 def create_admin(
         new_user: schemas.UserCreate,
         db: Session = Depends(get_postgres_db)):

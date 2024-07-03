@@ -9,10 +9,11 @@ from app.entities.models import RegularUser
 from app.core.authorization import user_dependency
 from app.services import regular_user_service, base_user_service
 
-user_router = APIRouter()
+regular_user_router = APIRouter()
+regular_user_router_root_path = "/API/users"
 
 
-@user_router.get("/api/users", tags=["Users"], response_model=list[schemas.RegularUser])
+@regular_user_router.get(regular_user_router_root_path, tags=["Users"], response_model=list[schemas.RegularUser])
 def read_all_users(
         current_user: Annotated[RegularUser, Depends(user_dependency([Role.ADMIN]))],
         skip: int = 0,
@@ -22,7 +23,7 @@ def read_all_users(
     return users
 
 
-@user_router.post("/api/users", tags=["Users"], response_model=schemas.RegularUser)
+@regular_user_router.post(regular_user_router_root_path, tags=["Users"], response_model=schemas.RegularUser)
 def create_user(
         new_user: schemas.UserCreate,
         db: Session = Depends(get_postgres_db)):
@@ -32,7 +33,7 @@ def create_user(
     return regular_user_service.create_user(db=db, user=new_user)
 
 
-@user_router.get("/api/users/me", tags=["Users"], response_model=schemas.RegularUser)
+@regular_user_router.get(regular_user_router_root_path + "/me", tags=["Users"], response_model=schemas.RegularUser)
 def read_my_info(
         current_user: Annotated[RegularUser, Depends(user_dependency([Role.REGULAR_USER]))],
         db: Session = Depends(get_postgres_db)):
