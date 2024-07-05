@@ -1,21 +1,21 @@
-from typing import Annotated
-from uuid import UUID
-
-from fastapi import APIRouter, Depends
+from typing import Annotated, Union
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.databases.postgres_config import get_postgres_db
-from app.models import schemas
-from app.models.enums import Role
-from app.models.schemas import User, Device
-from app.security.authorization import get_user_dependency, get_device_dependency
-from app.services import base_device_service, user_service
+from app.db.postgres import get_postgres_db
+from app.db.timescale import get_timescale_db
+from app.entities import schemas
+from app.entities.enums import Role
+from app.entities.schemas import RegularUser, Device
+from app.core.authorization import user_dependency, device_dependency
+from app.services import base_device_service
 
 device_router = APIRouter()
+device_router_root_path = "/API/devices"
 
 
-@device_router.get("/api/devices", tags=["Devices"], response_model=list[schemas.Device])
-def read_all_devices(current_user: Annotated[User, Depends(get_user_dependency(["admin"]))],
+@device_router.get(device_router_root_path, tags=["Devices"], response_model=list[schemas.Device])
+def read_all_devices(current_user: Annotated[RegularUser, Depends(user_dependency([Role.ADMIN]))],
                      db: Session = Depends(get_postgres_db),
                      limit: int = 100,
                      skip: int = 0):
@@ -23,28 +23,25 @@ def read_all_devices(current_user: Annotated[User, Depends(get_user_dependency([
     return devices
 
 
-@device_router.get("/api/devices/me", tags=["Devices"], response_model=list[schemas.Device])
+@device_router.get(device_router_root_path + "/me", tags=["Devices"], response_model=list[schemas.Device])
 def read_all_user_devices(
-        current_user: Annotated[User, Depends(get_user_dependency([Role.USER]))],
+        current_user: Annotated[RegularUser, Depends(user_dependency([Role.REGULAR_USER]))],
         db: Session = Depends(get_postgres_db),
         skip: int = 0,
         limit: int = 100, ):
-    devices = user_service.get_user_devices(db, skip=skip, limit=limit, user_id=current_user.id)
+    devices = base_device_service.get_user_devices(db, skip=skip, limit=limit, user_id=current_user.id)
     return devices
 
 
-@device_router.get("/api/devices/{device_id}", tags=["Devices"], response_model=schemas.Device)
-def read_device(device_id: UUID,
-                current_user: Annotated[User, Depends(get_user_dependency([Role.USER]))],
-                current_device: Annotated[Device, Depends(get_device_dependency)],
-                db: Session = Depends(get_postgres_db)):
+@device_router.get(device_router_root_path + "/{device_id}", tags=["Devices"], response_model=schemas.Device)
+def read_device(current_device: Annotated[Device, Depends(device_dependency)]):
     return current_device
 
 
-@device_router.post("/api/devices/me", tags=["Devices"], response_model=schemas.Device)
+@device_router.post(device_router_root_path + "/me", tags=["Devices"], response_model=schemas.Device)
 def create_user_device(
-        current_user: Annotated[User, Depends(get_user_dependency([Role.USER]))],
+        current_user: Annotated[RegularUser, Depends(user_dependency([Role.REGULAR_USER]))],
         device: schemas.DeviceCreate,
         db: Session = Depends(get_postgres_db)
 ):
-    return user_service.create_user_device(db=db, device=device, user_id=current_user.id)
+    return base_device_service.create_user_device(db=db, device=device, user_id=current_user.id)

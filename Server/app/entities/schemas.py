@@ -1,7 +1,8 @@
+import datetime
 from uuid import UUID
 from pydantic import BaseModel
 
-from app.models.enums import DeviceType, Role
+from app.entities.enums import DeviceType, Role, WasteType
 
 
 class Token(BaseModel):
@@ -43,7 +44,7 @@ class UserCreate(BaseModel):
     password: str
 
 
-class User(UserBase):
+class RegularUser(UserBase):
     devices: list[Device] = []
 
     class Config:
@@ -51,6 +52,21 @@ class User(UserBase):
 
 
 class Admin(UserBase):
-
     class Config:
         from_attributes = True
+
+
+class BaseRecord(BaseModel):
+    timestamp: datetime.datetime | None = None
+
+
+class ThermometerRecord(BaseRecord):
+    temperature: float
+
+
+class WasteSorterRecycleRecord(BaseRecord):
+    waste_type: WasteType
+
+
+class WasteSorterLevelRecord(BaseRecord):
+    level: float

@@ -14,6 +14,12 @@ class Settings(BaseSettings):
     postgres_port: str
     postgres_name: str
 
+    timescale_user: str
+    timescale_password: str
+    timescale_host: str
+    timescale_port: str
+    timescale_name: str
+
     class Config:
         env_file = ".env"
 

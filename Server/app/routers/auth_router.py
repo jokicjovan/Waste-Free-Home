@@ -4,16 +4,17 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.core.server_config import settings
-from app.databases.postgres_config import get_postgres_db
-from app.security.tokens import create_access_token
+from app.core.config import settings
+from app.db.postgres import get_postgres_db
+from app.core.tokens import create_access_token
 from app.services.base_user_service import authenticate_base_user
-from app.models.schemas import Token
+from app.entities.schemas import Token
 
 auth_router = APIRouter()
+auth_router_root_path = "/API/auth"
 
 
-@auth_router.post("/api/auth/token", tags=["Auth"], response_model=Token)
+@auth_router.post(auth_router_root_path + "/token", tags=["Auth"], response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_postgres_db)):
     user = authenticate_base_user(db, form_data.username, form_data.password)
     if not user:
