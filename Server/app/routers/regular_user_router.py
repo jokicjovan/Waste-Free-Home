@@ -14,7 +14,7 @@ regular_user_router_root_path = "/API/users"
 
 
 @regular_user_router.get(regular_user_router_root_path, tags=["Users"], response_model=list[schemas.RegularUser])
-def read_all_users(
+async def read_all_users(
         current_user: Annotated[RegularUser, Depends(user_dependency([Role.ADMIN]))],
         skip: int = 0,
         limit: int = 100,
@@ -24,7 +24,7 @@ def read_all_users(
 
 
 @regular_user_router.post(regular_user_router_root_path, tags=["Users"], response_model=schemas.RegularUser)
-def create_user(
+async def create_user(
         new_user: schemas.UserCreate,
         db: Session = Depends(get_postgres_db)):
     user = base_user_service.get_base_user_by_email(db, email=new_user.email)
@@ -34,7 +34,7 @@ def create_user(
 
 
 @regular_user_router.get(regular_user_router_root_path + "/me", tags=["Users"], response_model=schemas.RegularUser)
-def read_my_info(
+async def read_my_info(
         current_user: Annotated[RegularUser, Depends(user_dependency([Role.REGULAR_USER]))],
         db: Session = Depends(get_postgres_db)):
     user = regular_user_service.get_user(db, user_id=current_user.id)
