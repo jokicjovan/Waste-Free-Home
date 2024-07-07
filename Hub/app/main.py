@@ -1,31 +1,30 @@
-import paho.mqtt.client as mqtt
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
-app = FastAPI()
-
-client_id = "b2cd11e9-8c25-4515-9efa-810c02f05255"
-mqtt_broker_address = "mqtt_broker"
-mqtt_broker_port = 1883
-mqtt_topic = "devices/#"
+from app.entities.schemas import UserCredentials
+from app.core.config import settings
+from app.core.utils import update_env_file, get_jwt
+from app.core.mqtt_handler import mqtt_client, on_connect, on_message
 
 
-def on_connect(client, userdata, flags, rc):
-    print(f"Connected to MQTT broker with result code {rc}")
-    client.subscribe(mqtt_topic)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    get_jwt()
+    mqtt_client.on_connect = on_connect
+    mqtt_client.on_message = on_message
+    mqtt_client.connect(settings.mqtt_broker_address, settings.mqtt_broker_port, 60)
+    mqtt_client.loop_start()
+    yield
 
 
-def on_message(client, userdata, msg):
-    data = msg.payload.decode("utf-8")
-    print(f"Received MQTT message: {data}")
+app = FastAPI(lifespan=lifespan)
 
 
-mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1, client_id=client_id)
-mqtt_client.on_connect = on_connect
-mqtt_client.on_message = on_message
-mqtt_client.connect(mqtt_broker_address, mqtt_broker_port, 60)
-mqtt_client.loop_start()
-
-
-@app.get("/")
-async def root():
-    return {"message": "Hello Hub"}
+@app.put("/change-credentials")
+async def update_credentials(credentials: UserCredentials):
+    settings.user_email = credentials.email
+    settings.user_password = credentials.password
+    update_env_file("user_email", credentials.email)
+    update_env_file("user_password", credentials.password)
+    return "Success"

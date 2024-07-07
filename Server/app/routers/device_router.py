@@ -3,7 +3,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.postgres import get_postgres_db
-from app.db.timescale import get_timescale_db
 from app.entities import schemas
 from app.entities.enums import Role
 from app.entities.schemas import RegularUser, Device
@@ -15,7 +14,7 @@ device_router_root_path = "/API/devices"
 
 
 @device_router.get(device_router_root_path, tags=["Devices"], response_model=list[schemas.Device])
-def read_all_devices(current_user: Annotated[RegularUser, Depends(user_dependency([Role.ADMIN]))],
+async def read_all_devices(current_user: Annotated[RegularUser, Depends(user_dependency([Role.ADMIN]))],
                      db: Session = Depends(get_postgres_db),
                      limit: int = 100,
                      skip: int = 0):
@@ -24,7 +23,7 @@ def read_all_devices(current_user: Annotated[RegularUser, Depends(user_dependenc
 
 
 @device_router.get(device_router_root_path + "/me", tags=["Devices"], response_model=list[schemas.Device])
-def read_all_user_devices(
+async def read_all_user_devices(
         current_user: Annotated[RegularUser, Depends(user_dependency([Role.REGULAR_USER]))],
         db: Session = Depends(get_postgres_db),
         skip: int = 0,
@@ -34,12 +33,12 @@ def read_all_user_devices(
 
 
 @device_router.get(device_router_root_path + "/{device_id}", tags=["Devices"], response_model=schemas.Device)
-def read_device(current_device: Annotated[Device, Depends(device_dependency)]):
+async def read_device(current_device: Annotated[Device, Depends(device_dependency)]):
     return current_device
 
 
 @device_router.post(device_router_root_path + "/me", tags=["Devices"], response_model=schemas.Device)
-def create_user_device(
+async def create_user_device(
         current_user: Annotated[RegularUser, Depends(user_dependency([Role.REGULAR_USER]))],
         device: schemas.DeviceCreate,
         db: Session = Depends(get_postgres_db)

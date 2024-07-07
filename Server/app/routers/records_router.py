@@ -20,7 +20,7 @@ records_lists_response_model = Dict[
 
 @records_router.post(records_router_root_path + "/{device_id}", tags=["Records"],
                      response_model=records_response_model)
-def create_device_records(current_device: Annotated[Device, Depends(device_dependency)],
+async def create_device_records(current_device: Annotated[Device, Depends(device_dependency)],
                           record_body: records_response_model,
                           models_db: Session = Depends(get_postgres_db),
                           time_series_db: Session = Depends(get_timescale_db)):
@@ -32,7 +32,7 @@ def create_device_records(current_device: Annotated[Device, Depends(device_depen
 
 @records_router.get(records_router_root_path + "/{device_id}", tags=["Records"],
                     response_model=records_lists_response_model)
-def get_device_records(current_device: Annotated[Device, Depends(device_dependency)],
+async def get_device_records(current_device: Annotated[Device, Depends(device_dependency)],
                        models_db: Session = Depends(get_postgres_db),
                        time_series_db: Session = Depends(get_timescale_db),
                        limit: int = 100,

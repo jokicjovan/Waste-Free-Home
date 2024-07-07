@@ -14,7 +14,7 @@ admin_router_root_path = "/API/admins"
 
 
 @admin_router.get(admin_router_root_path, tags=["Admins"], response_model=list[schemas.Admin])
-def read_all_admins(
+async def read_all_admins(
         current_user: Annotated[Admin, Depends(user_dependency([Role.ADMIN]))],
         skip: int = 0,
         limit: int = 100,
@@ -24,7 +24,7 @@ def read_all_admins(
 
 
 @admin_router.post(admin_router_root_path, tags=["Admins"], response_model=schemas.Admin)
-def create_admin(
+async def create_admin(
         new_user: schemas.UserCreate,
         db: Session = Depends(get_postgres_db)):
     base_user = base_user_service.get_base_user_by_email(db, email=new_user.email)
