@@ -1,3 +1,5 @@
+import re
+
 import qrcode
 
 
@@ -7,3 +9,7 @@ def generate_qr_code(data: str):
     qr.make(fit=True)
     img = qr.make_image(fill="black", back_color="white")
     return img
+
+
+def camelcase_to_snakecase(name):
+    return re.sub(r'(?<!^)(?=[A-Z])', '_', name).lower()
