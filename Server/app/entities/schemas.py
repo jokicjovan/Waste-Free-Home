@@ -63,10 +63,19 @@ class BaseRecord(BaseModel):
 class ThermometerRecord(BaseRecord):
     temperature: float
 
+    class Config:
+        use_enum_values = True
+
 
 class WasteSorterRecycleRecord(BaseRecord):
     waste_type: WasteType
 
+    class Config:
+        use_enum_values = True
+
 
 class WasteSorterLevelRecord(BaseRecord):
     level: float
+
+    class Config:
+        use_enum_values = True
