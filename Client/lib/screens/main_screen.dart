@@ -35,6 +35,7 @@ class _MainScreenState extends State<MainScreen> {
               IconButton(
                 icon: const Icon(Icons.logout),
                 onPressed: () => _logout(context),
+                tooltip: "Log out",
               ),
             ],
           ),

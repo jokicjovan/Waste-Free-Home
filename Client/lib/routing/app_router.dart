@@ -18,8 +18,12 @@ class AppRouter extends _$AppRouter {
             page: MainRoute.page,
             children: [
               AutoRoute(
-                  path: 'devices', page: DevicesRoute.page, initial: true),
-              AutoRoute(path: 'hub', page: HubRoute.page),
+                  path: 'devices',
+                  page: DevicesRoute.page,
+                  initial: true,
+                  guards: [AuthGuard()]),
+              AutoRoute(
+                  path: 'hub', page: HubRoute.page, guards: [AuthGuard()]),
             ],
             initial: true,
             guards: [AuthGuard()]),
