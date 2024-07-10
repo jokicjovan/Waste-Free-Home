@@ -4,8 +4,6 @@ import 'package:waste_free_home/models/device.dart';
 import 'package:waste_free_home/services/device_service.dart';
 import 'package:waste_free_home/widgets/device_card.dart';
 
-import 'package:flutter/material.dart';
-
 @RoutePage()
 class DevicesScreen extends StatefulWidget {
   const DevicesScreen({super.key});
