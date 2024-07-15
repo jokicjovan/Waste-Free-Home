@@ -1,7 +1,7 @@
 #include <ESP32Servo.h>
 
 // Enums
-typedef enum ItemType{
+typedef enum ProductType{
   RECYCABLE, NONRECYCABLE, UNDEFINED
 };
 
@@ -12,7 +12,7 @@ static const int nonrecycableServoPin = 13;
 // Variables;
 Servo recycableServo;
 Servo nonrecycableServo;
-ItemType itemType;
+ProductType productType;
 
 void setup() {
   Serial.begin(9600);
@@ -20,20 +20,20 @@ void setup() {
   nonrecycableServo.attach(nonrecycableServoPin);
   recycableServo.write(80);
   nonrecycableServo.write(80);
-  itemType = UNDEFINED;
+  productType = UNDEFINED;
 }
 
 void loop() {
-  if(itemType == RECYCABLE){
+  if(productType == RECYCABLE){
     recycableServo.write(140);
     delay(5000);
-    itemType = UNDEFINED;
+    productType = UNDEFINED;
     recycableServo.write(80);
   }
-  else if(itemType == NONRECYCABLE){
+  else if(productType == NONRECYCABLE){
     nonrecycableServo.write(30);
     delay(5000);
-    itemType = UNDEFINED;
+    productType = UNDEFINED;
     nonrecycableServo.write(80);
   delay(5000);
 }
