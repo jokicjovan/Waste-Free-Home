@@ -21,7 +21,12 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
-@app.put("/change-credentials")
+@app.get("/API/health")
+async def health_check():
+    return {"status": "ok"}
+
+
+@app.put("/API/update-credentials")
 async def update_credentials(credentials: UserCredentials):
     settings.user_email = credentials.email
     settings.user_password = credentials.password
