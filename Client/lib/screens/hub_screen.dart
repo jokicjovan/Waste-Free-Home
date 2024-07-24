@@ -1,7 +1,5 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:waste_free_home/services/hub_service.dart';
 
 @RoutePage()
@@ -118,7 +116,6 @@ class HubScreenState extends State<HubScreen> {
                       ),
                       child: Column(
                         children: [
-                          // Title of the section
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Container(

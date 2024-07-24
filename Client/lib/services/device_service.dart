@@ -32,4 +32,18 @@ class DeviceService {
     }
     return [];
   }
+
+  Future<Device?> getDeviceById(String id) async{
+    try {
+      final response = await _dio.get('/$id');
+      if (response.statusCode == 200) {
+        return Device.fromJson(response.data);
+      } else {
+        print('Failed to load device: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error retrieving device: $e');
+    }
+    return null;
+  }
 }

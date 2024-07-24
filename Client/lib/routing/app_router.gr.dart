@@ -15,6 +15,18 @@ abstract class _$AppRouter extends RootStackRouter {
 
   @override
   final Map<String, PageFactory> pagesMap = {
+    DeviceDetailsRoute.name: (routeData) {
+      final pathParams = routeData.inheritedPathParams;
+      final args = routeData.argsAs<DeviceDetailsRouteArgs>(
+          orElse: () => DeviceDetailsRouteArgs(id: pathParams.getString('id')));
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: DeviceDetailsScreen(
+          key: args.key,
+          id: args.id,
+        ),
+      );
+    },
     DevicesRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -40,6 +52,45 @@ abstract class _$AppRouter extends RootStackRouter {
       );
     },
   };
+}
+
+/// generated route for
+/// [DeviceDetailsScreen]
+class DeviceDetailsRoute extends PageRouteInfo<DeviceDetailsRouteArgs> {
+  DeviceDetailsRoute({
+    Key? key,
+    required String id,
+    List<PageRouteInfo>? children,
+  }) : super(
+          DeviceDetailsRoute.name,
+          args: DeviceDetailsRouteArgs(
+            key: key,
+            id: id,
+          ),
+          rawPathParams: {'id': id},
+          initialChildren: children,
+        );
+
+  static const String name = 'DeviceDetailsRoute';
+
+  static const PageInfo<DeviceDetailsRouteArgs> page =
+      PageInfo<DeviceDetailsRouteArgs>(name);
+}
+
+class DeviceDetailsRouteArgs {
+  const DeviceDetailsRouteArgs({
+    this.key,
+    required this.id,
+  });
+
+  final Key? key;
+
+  final String id;
+
+  @override
+  String toString() {
+    return 'DeviceDetailsRouteArgs{key: $key, id: $id}';
+  }
 }
 
 /// generated route for
