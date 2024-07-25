@@ -1,18 +1,18 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:waste_free_home/models/waste_sorter_records.dart';
+import 'package:waste_free_home/models/thermometer_records.dart';
 
-class WasteSorterLevelChart extends StatelessWidget {
-  final List<WasteSorterLevelRecord> data;
+class ThermometerTemperatureChart extends StatelessWidget {
+  final List<ThermometerTemperatureRecord> data;
 
-  WasteSorterLevelChart({required this.data});
+  ThermometerTemperatureChart({required this.data});
 
   @override
   Widget build(BuildContext context) {
     if (data.isEmpty) {
       return const Center(child: Text('No data available'));
     }
-    
+
     return SizedBox(
       height: 300,
       child: LineChart(
@@ -27,37 +27,37 @@ class WasteSorterLevelChart extends StatelessWidget {
           titlesData: FlTitlesData(
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
-                showTitles: true,
-                reservedSize: 36,
-                getTitlesWidget: (value, meta) {
-                  final date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: '${date.day}/${date.month}\n',
-                            style: const TextStyle(
-                              color: Color(0xff68737d),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
+                  showTitles: true,
+                  reservedSize: 36,
+                  getTitlesWidget: (value, meta) {
+                    final date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: '${date.day}/${date.month}\n',
+                              style: const TextStyle(
+                                color: Color(0xff68737d),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
                             ),
-                          ),
-                          TextSpan(
-                            text: '${date.year}',
-                            style: const TextStyle(
-                              color: Color(0xff68737d),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 10,
+                            TextSpan(
+                              text: '${date.year}',
+                              style: const TextStyle(
+                                color: Color(0xff68737d),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                  );
-                }
+                    );
+                  }
               ),
             ),
             topTitles: const AxisTitles(
@@ -70,7 +70,7 @@ class WasteSorterLevelChart extends StatelessWidget {
               sideTitles: SideTitles(showTitles: false),
             ),
             rightTitles: const AxisTitles(
-              axisNameWidget: Text('Capacity filled (%)',
+              axisNameWidget: Text('Degrees (°C)',
                   style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
@@ -83,15 +83,15 @@ class WasteSorterLevelChart extends StatelessWidget {
             LineChartBarData(
               spots: data
                   .map((e) {
-                    final timestampMs =
-                        e.timestamp.millisecondsSinceEpoch.toDouble();
-                    final level = e.level;
-                    if (timestampMs.isFinite && level.isFinite) {
-                      return FlSpot(timestampMs, level);
-                    } else {
-                      return null;
-                    }
-                  })
+                final timestampMs =
+                e.timestamp.millisecondsSinceEpoch.toDouble();
+                final temperature = e.temperature;
+                if (timestampMs.isFinite && temperature.isFinite) {
+                  return FlSpot(timestampMs, temperature);
+                } else {
+                  return null;
+                }
+              })
                   .where((spot) => spot != null)
                   .cast<FlSpot>()
                   .toList(),

@@ -1,24 +1,8 @@
-class WasteSorterRecord {
-  final DateTime timestamp;
-
-  WasteSorterRecord({required this.timestamp});
-
-  factory WasteSorterRecord.fromJson(Map<String, dynamic> json) {
-    return WasteSorterRecord(
-      timestamp: DateTime.parse(json['timestamp']),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'timestamp': timestamp.toIso8601String(),
-    };
-  }
-}
+import 'package:waste_free_home/models/record.dart';
 
 enum WasteType { RECYCLABLE, NON_RECYCLABLE }
 
-class WasteSorterRecycleRecord extends WasteSorterRecord {
+class WasteSorterRecycleRecord extends Record {
   final WasteType wasteType;
 
   WasteSorterRecycleRecord({
@@ -46,7 +30,7 @@ class WasteSorterRecycleRecord extends WasteSorterRecord {
   }
 }
 
-class WasteSorterLevelRecord extends WasteSorterRecord {
+class WasteSorterLevelRecord extends Record {
   final double level;
 
   WasteSorterLevelRecord({

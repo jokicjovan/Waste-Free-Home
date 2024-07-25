@@ -1,16 +1,18 @@
-String getDefaultDeviceImageUrl(String deviceType) {
+import 'package:waste_free_home/models/device.dart';
+
+String getDefaultDeviceImageUrl(DeviceType deviceType) {
   switch (deviceType) {
-    case 'WASTE_SORTER':
+    case DeviceType.WASTE_SORTER:
       return 'assets/images/waste_sorter_default_opaque.png';
-    case 'THERMOMETER':
+    case DeviceType.THERMOMETER:
       return 'assets/images/thermometer_default_opaque.png';
     default:
       return 'assets/images/recycling.png';
   }
 }
 
-String formatDeviceType(String type) {
-  String formatted = type.replaceAll('_', ' ');
+String formatDeviceType(DeviceType type) {
+  String formatted = type.name.toString().replaceAll('_', ' ');
 
   return formatted.split(' ').map((word) {
     if (word.isNotEmpty) {

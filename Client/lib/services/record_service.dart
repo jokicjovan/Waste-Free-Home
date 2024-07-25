@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:waste_free_home/models/thermometer_records.dart';
 import 'package:waste_free_home/models/waste_sorter_records.dart';
 import 'package:waste_free_home/utils/dio.dart';
 
@@ -36,16 +37,29 @@ class RecordService {
 
       if (response.statusCode == 200) {
         final data = response.data;
-        final recycleRecords = (data['waste_sorter_recycle_record'] as List)
-            .map((record) => WasteSorterRecycleRecord.fromJson(record))
+
+        final recycleRecords = (data['waste_sorter_recycle_record'] as List?)
+            ?.map((record) => WasteSorterRecycleRecord.fromJson(record))
             .toList();
-        final levelRecords = (data['waste_sorter_level_record'] as List)
-            .map((record) => WasteSorterLevelRecord.fromJson(record))
+        final levelRecords = (data['waste_sorter_level_record'] as List?)
+            ?.map((record) => WasteSorterLevelRecord.fromJson(record))
             .toList();
-        return {
-          'recycleRecords': recycleRecords,
-          'levelRecords': levelRecords,
-        };
+        final temperatureRecords = (data['thermometer_record'] as List?)
+            ?.map((record) => ThermometerTemperatureRecord.fromJson(record))
+            .toList();
+
+        if (recycleRecords != null && levelRecords != null) {
+          return {
+            'recycleRecords': recycleRecords,
+            'levelRecords': levelRecords,
+          };
+        } else if (temperatureRecords != null) {
+          return {
+            'temperatureRecords': temperatureRecords,
+          };
+        } else {
+          throw Exception('No valid records found');
+        }
       } else {
         throw Exception('Failed to load records');
       }
@@ -53,4 +67,5 @@ class RecordService {
       throw Exception('Failed to load records: $e');
     }
   }
+
 }

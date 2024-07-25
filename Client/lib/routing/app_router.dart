@@ -1,7 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:waste_free_home/routing/auth_guard.dart';
-import 'package:waste_free_home/screens/waste_sorter_details_screen.dart';
+import 'package:waste_free_home/screens/device_details_screen.dart';
 import 'package:waste_free_home/screens/devices_screen.dart';
 import 'package:waste_free_home/screens/hub_screen.dart';
 import 'package:waste_free_home/screens/login_screen.dart';
