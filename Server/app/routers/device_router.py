@@ -2,7 +2,7 @@ import io
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from fastapi.responses import StreamingResponse
 
@@ -48,7 +48,10 @@ async def link_with_device(
         device_id: UUID,
         db: Session = Depends(get_postgres_db)
 ):
-    return base_device_service.link_device_to_user(db=db, device_id=device_id, user_id=current_user.id)
+    device = base_device_service.link_device_to_user(db=db, device_id=device_id, user_id=current_user.id)
+    if device is None:
+        raise HTTPException(status_code=400, detail="Bad request")
+    return device
 
 
 @device_router.post(device_router_root_path, tags=["Devices"])

@@ -29,6 +29,36 @@ class DevicesScreenState extends State<DevicesScreen> {
     });
   }
 
+  Future<void> _showLinkWithDeviceDialog() async {
+    final result = await context.router.push(QRScanRoute());
+    if (result != null) {
+      _linkDevice(result.toString());
+    }
+  }
+
+  Future<void> _linkDevice(String uuid) async {
+    try {
+      await _deviceService.linkWithDevice(uuid);
+        _refreshDevices();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: DefaultTextStyle(
+              style: TextStyle(color: Colors.white),
+              child: Text('Device linked successfully'),
+            ),
+          ),
+        );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        backgroundColor: Colors.redAccent,
+        content: DefaultTextStyle(
+          style: TextStyle(color: Colors.white),
+          child: Text('Error occurred while linking device'),
+        ),
+      ));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,8 +77,7 @@ class DevicesScreenState extends State<DevicesScreen> {
                 return const Center(child: Text('No devices found.'));
               } else {
                 return GridView.builder(
-                  gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 8.0,
                     mainAxisSpacing: 8.0,
@@ -70,8 +99,10 @@ class DevicesScreenState extends State<DevicesScreen> {
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showLinkWithDeviceDialog,
+        child: const Icon(Icons.link),
+      ),
     );
   }
 }
-
-

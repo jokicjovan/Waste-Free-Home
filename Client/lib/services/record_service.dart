@@ -21,51 +21,46 @@ class RecordService {
 
   Future<Map<String, List<dynamic>>> getRecords(String deviceId,
       {DateTime? startDate, DateTime? endDate}) async {
-    try {
-      final queryParams = <String, dynamic>{};
-      if (startDate != null) {
-        queryParams['start_date'] = startDate.toIso8601String();
-      }
-      if (endDate != null) {
-        queryParams['end_date'] = endDate.toIso8601String();
-      }
+    final queryParams = <String, dynamic>{};
+    if (startDate != null) {
+      queryParams['start_date'] = startDate.toIso8601String();
+    }
+    if (endDate != null) {
+      queryParams['end_date'] = endDate.toIso8601String();
+    }
 
-      final response = await _dio.get(
-        '/$deviceId',
-        queryParameters: queryParams,
-      );
+    final response = await _dio.get(
+      '/$deviceId',
+      queryParameters: queryParams,
+    );
 
-      if (response.statusCode == 200) {
-        final data = response.data;
+    if (response.statusCode == 200) {
+      final data = response.data;
 
-        final recycleRecords = (data['waste_sorter_recycle_record'] as List?)
-            ?.map((record) => WasteSorterRecycleRecord.fromJson(record))
-            .toList();
-        final levelRecords = (data['waste_sorter_level_record'] as List?)
-            ?.map((record) => WasteSorterLevelRecord.fromJson(record))
-            .toList();
-        final temperatureRecords = (data['thermometer_record'] as List?)
-            ?.map((record) => ThermometerTemperatureRecord.fromJson(record))
-            .toList();
+      final recycleRecords = (data['waste_sorter_recycle_record'] as List?)
+          ?.map((record) => WasteSorterRecycleRecord.fromJson(record))
+          .toList();
+      final levelRecords = (data['waste_sorter_level_record'] as List?)
+          ?.map((record) => WasteSorterLevelRecord.fromJson(record))
+          .toList();
+      final temperatureRecords = (data['thermometer_record'] as List?)
+          ?.map((record) => ThermometerTemperatureRecord.fromJson(record))
+          .toList();
 
-        if (recycleRecords != null && levelRecords != null) {
-          return {
-            'recycleRecords': recycleRecords,
-            'levelRecords': levelRecords,
-          };
-        } else if (temperatureRecords != null) {
-          return {
-            'temperatureRecords': temperatureRecords,
-          };
-        } else {
-          throw Exception('No valid records found');
-        }
+      if (recycleRecords != null && levelRecords != null) {
+        return {
+          'recycleRecords': recycleRecords,
+          'levelRecords': levelRecords,
+        };
+      } else if (temperatureRecords != null) {
+        return {
+          'temperatureRecords': temperatureRecords,
+        };
       } else {
-        throw Exception('Failed to load records');
+        throw Exception('No valid records found');
       }
-    } catch (e) {
-      throw Exception('Failed to load records: $e');
+    } else {
+      throw Exception('Failed to load records');
     }
   }
-
 }

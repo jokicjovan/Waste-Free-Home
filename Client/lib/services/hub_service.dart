@@ -16,36 +16,26 @@ class HubService {
   }
 
   Future<bool> isOnline() async {
-    try {
-      final response = await _dio.get('/health');
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        print('Failed to load devices: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Error retrieving hub status: $e');
+    final response = await _dio.get('/health');
+    if (response.statusCode == 200) {
+      return true;
     }
-    return false;
+    print('Failed to retrieve hub status: ${response.statusCode}');
+    throw Exception('Failed to retrieve hub status: ${response.statusCode}');
   }
 
   Future<bool> updateCredentials(String email, String password) async {
-    try {
-      final response = await _dio.put(
-        '/update-credentials',
-        data: {
-          'email': email,
-          'password': password,
-        },
-      );
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        print('Failed to update credentials: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Error updating credentials: $e');
+    final response = await _dio.put(
+      '/update-credentials',
+      data: {
+        'email': email,
+        'password': password,
+      },
+    );
+    if (response.statusCode == 200) {
+      return true;
     }
-    return false;
+    print('Failed to update credentials: ${response.statusCode}');
+    throw Exception('Failed to update credentials:  ${response.statusCode}');
   }
 }

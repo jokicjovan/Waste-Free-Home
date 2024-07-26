@@ -38,20 +38,14 @@ class HubScreenState extends State<HubScreen> {
   Future<void> _updateCredentials() async {
     if (_formKey.currentState!.validate()) {
       try {
-        final bool success = await _hubService.updateCredentials(
+        await _hubService.updateCredentials(
           _emailController.text,
           _passwordController.text,
         );
-        if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Credentials updated successfully')),
-          );
-          _clearForm();
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to update credentials')),
-          );
-        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Credentials updated successfully')),
+        );
+        _clearForm();
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e')),
@@ -171,9 +165,8 @@ class HubScreenState extends State<HubScreen> {
                                   child: const Text(
                                     'Update Credentials',
                                     style: TextStyle(
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 14
-                                    ),
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 14),
                                   ),
                                 ),
                               ],

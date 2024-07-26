@@ -29,8 +29,8 @@ class LoginScreenState extends State<LoginScreen> {
       final email = _emailController.text;
       final password = _passwordController.text;
 
-      final success = await _authService.login(email, password);
-      if (success) {
+      try {
+        await _authService.login(email, password);
         context.router.replaceAll([const MainRoute()]);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -40,7 +40,7 @@ class LoginScreenState extends State<LoginScreen> {
             ),
           ),
         );
-      } else {
+      } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: Colors.redAccent,
           content: DefaultTextStyle(
@@ -113,9 +113,7 @@ class LoginScreenState extends State<LoginScreen> {
                         child: const Text(
                           'Log in',
                           style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 20
-                          ),
+                              fontWeight: FontWeight.normal, fontSize: 20),
                         ),
                       ),
                     ],

@@ -19,32 +19,26 @@ class AuthService {
   }
 
   Future<bool> login(String email, String password) async {
-    try {
-      final response = await _dio.post(
-        '/token',
-        data: {
-          'username': email,
-          'password': password,
+    final response = await _dio.post(
+      '/token',
+      data: {
+        'username': email,
+        'password': password,
+      },
+      options: Options(
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
         },
-        options: Options(
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-          },
-        ),
-      );
+      ),
+    );
 
-      if (response.statusCode == 200) {
-        final token = response.data['access_token'];
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('access_token', token);
-        return true;
-      } else {
-        return false;
-      }
-    } catch (e) {
-      print('Error: $e');
-      return false;
+    if (response.statusCode == 200) {
+      final token = response.data['access_token'];
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('access_token', token);
+      return true;
     }
+    throw Exception("Failed to login");
   }
 
   Future<String?> getToken() async {
@@ -61,15 +55,13 @@ class AuthService {
     final token = await getToken();
     if (token == null) return false;
 
-    try {
-      final response = await _dio.get(
-        '/validate_token',
-      );
+    final response = await _dio.get(
+      '/validate_token',
+    );
 
-      return response.statusCode == 200;
-    } catch (e) {
-      print('Error: $e');
-      return false;
+    if (response.statusCode == 200){
+      return true;
     }
+    throw Exception("Failed to validate token");
   }
 }

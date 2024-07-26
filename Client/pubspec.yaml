@@ -36,6 +36,7 @@ dependencies:
   flutter_dotenv: ^5.0.2
   fl_chart: ^0.68.0
   flutter_date_range_picker: ^0.1.1
+  qr_code_scanner: ^1.0.1
 
 
   # The following adds the Cupertino Icons font to your application.

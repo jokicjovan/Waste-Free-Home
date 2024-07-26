@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:waste_free_home/routing/auth_guard.dart';
+import 'package:waste_free_home/screens/QR_scan_screen.dart';
 import 'package:waste_free_home/screens/device_details_screen.dart';
 import 'package:waste_free_home/screens/devices_screen.dart';
 import 'package:waste_free_home/screens/hub_screen.dart';
@@ -20,6 +21,13 @@ class AppRouter extends _$AppRouter {
           AutoRoute(path: 'devices', page: DevicesRoute.page),
           AutoRoute(path: 'hub', page: HubRoute.page),
         ]),
-        AutoRoute(path: '/devices/:id/details', page: DeviceDetailsRoute.page),
+        AutoRoute(
+            path: '/devices/:id',
+            page: DeviceDetailsRoute.page,
+            guards: [AuthGuard()]),
+        AutoRoute(
+            path: '/devices/link/qr-scan',
+            page: QRScanRoute.page,
+            guards: [AuthGuard()]),
       ];
 }

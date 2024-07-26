@@ -51,6 +51,12 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const MainScreen(),
       );
     },
+    QRScanRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const QRScanScreen(),
+      );
+    },
   };
 }
 
@@ -145,6 +151,20 @@ class MainRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'MainRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [QRScanScreen]
+class QRScanRoute extends PageRouteInfo<void> {
+  const QRScanRoute({List<PageRouteInfo>? children})
+      : super(
+          QRScanRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'QRScanRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
 }

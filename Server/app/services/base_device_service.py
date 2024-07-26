@@ -24,6 +24,8 @@ def get_user_devices(db: Session, user_id: UUID, skip: int = 0, limit: int = 100
 
 def link_device_to_user(db: Session, device_id: UUID, user_id: UUID):
     db_device = get_device(db, device_id)
+    if db_device.owner_id:
+        return None
     db_device.owner_id = user_id
     db.commit()
     db.refresh(db_device)
