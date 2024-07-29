@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from fastapi.responses import StreamingResponse, FileResponse
 
 from app.core import utils
-from app.core.validations import  verify_thumbnail_size
+from app.core.validations import  validate_thumbnail
 from app.db.postgres import get_postgres_db
 from app.entities import schemas
 from app.entities.enums import Role, DeviceType
@@ -70,7 +70,7 @@ async def create_device(
         title: str = Form(...),
         description: str = Form(...),
         type: DeviceType = Form(...),
-        thumbnail: Optional[UploadFile] = Depends(verify_thumbnail_size),
+        thumbnail: Optional[UploadFile] = Depends(validate_thumbnail),
         db: Session = Depends(get_postgres_db)
 ):
     device_schema = schemas.DeviceCreate(title=title, description=description, type=type)
