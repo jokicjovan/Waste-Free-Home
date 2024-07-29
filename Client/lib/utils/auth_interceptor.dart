@@ -5,10 +5,10 @@ class AuthInterceptor extends InterceptorsWrapper {
   @override
   Future onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('access_token');
+    String? accessToken = prefs.getString('access_token');
 
-    if (token != null) {
-      options.headers['Authorization'] = 'Bearer $token';
+    if (accessToken != null) {
+      options.headers['Authorization'] = 'Bearer $accessToken';
     }
     return handler.next(options);
   }

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:waste_free_home/models/device.dart';
+import 'package:waste_free_home/services/device_service.dart';
 import 'package:waste_free_home/utils/helper_methods.dart';
 
 class DeviceCard extends StatelessWidget {
+  final DeviceService _deviceService = DeviceService();
   final Device device;
 
-  const DeviceCard({super.key, required this.device});
+
+  DeviceCard({super.key, required this.device});
 
   @override
   Widget build(BuildContext context) {
@@ -25,24 +28,43 @@ class DeviceCard extends StatelessWidget {
             Container(
               decoration: const BoxDecoration(
                 border:
-                    Border(bottom: BorderSide(color: Colors.black, width: 1))
+                    Border(bottom: BorderSide(color: Colors.black, width: 1)),
               ),
               child: ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(10)),
-                child: device.imageUrl != null
-                    ? Image.network(
-                        device.imageUrl!,
-                        fit: BoxFit.cover,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                child: FutureBuilder<ImageProvider>(
+                  future: _deviceService.getDeviceThumbnail(device.id),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const SizedBox(
                         width: double.infinity,
                         height: 120,
-                      )
-                    : Image.asset(
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Image.asset(
                         getDefaultDeviceImageUrl(device.type),
                         fit: BoxFit.cover,
                         width: double.infinity,
                         height: 120,
-                      ),
+                      );
+                    } else if (snapshot.hasData) {
+                      return Image(
+                        image: snapshot.data!,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: 120,
+                      );
+                    } else {
+                      return Image.asset(
+                        getDefaultDeviceImageUrl(device.type),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: 120,
+                      );
+                    }
+                  },
+                ),
               ),
             ),
             Container(

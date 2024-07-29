@@ -16,7 +16,7 @@ class TokenData(BaseModel):
 
 class DeviceBase(BaseModel):
     title: str
-    description: str = ""
+    description: str
 
 
 class DeviceCreate(DeviceBase):

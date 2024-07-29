@@ -7,11 +7,10 @@ import 'package:waste_free_home/utils/helper_methods.dart';
 import 'package:waste_free_home/widgets/thermometer_recorded_data.dart';
 import 'package:waste_free_home/widgets/waste_sorter_recorded_data.dart';
 
-@RoutePage()
 class DeviceDetailsScreen extends StatefulWidget {
   final String id;
 
-  const DeviceDetailsScreen({super.key, @PathParam('id') required this.id});
+  const DeviceDetailsScreen({super.key, required this.id});
 
   @override
   State<DeviceDetailsScreen> createState() => _DeviceDetailsScreenState();
@@ -29,6 +28,24 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
 
   void _loadDevice() {
     _deviceFuture = _deviceService.getDeviceById(widget.id);
+  }
+
+  void _showFullScreenImage(BuildContext context, ImageProvider image) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: EdgeInsets.all(10),
+          child: GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
+            child: InteractiveViewer(
+              child: Image(image: image),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildDeviceWidget(
@@ -120,20 +137,48 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12.0),
-                    child: device.imageUrl != null
-                        ? Image.network(
-                      device.imageUrl!,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: 200,
-                    )
-                        : Image.asset(
-                      getDefaultDeviceImageUrl(device.type),
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: 200,
+                  GestureDetector(
+                    onTap: () async {
+                      final imageProvider = await _deviceService.getDeviceThumbnail(device.id);
+                      if (imageProvider != null) {
+                        _showFullScreenImage(context, imageProvider);
+                      }
+                    },
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                      child: FutureBuilder<ImageProvider>(
+                        future: _deviceService.getDeviceThumbnail(device.id),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const SizedBox(
+                              width: double.infinity,
+                              height: 200,
+                              child: Center(child: CircularProgressIndicator()),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Image.asset(
+                              getDefaultDeviceImageUrl(device.type),
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: 200,
+                            );
+                          } else if (snapshot.hasData) {
+                            return Image(
+                              image: snapshot.data!,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: 200,
+                            );
+                          } else {
+                            return Image.asset(
+                              getDefaultDeviceImageUrl(device.type),
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: 200,
+                            );
+                          }
+                        },
+                      ),
                     ),
                   ),
                   Padding(

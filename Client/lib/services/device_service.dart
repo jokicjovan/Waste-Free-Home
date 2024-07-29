@@ -1,6 +1,7 @@
 import 'dart:convert';
-
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:waste_free_home/utils/dio.dart';
 import 'package:waste_free_home/models/device.dart';
@@ -53,5 +54,16 @@ class DeviceService {
       return Device.fromJson(response.data);
     }
     throw Exception('Failed to update device: ${response.statusCode}');
+  }
+
+  Future<ImageProvider> getDeviceThumbnail(String id) async {
+    final response = await _dio.get(
+      '/$id/thumbnail',
+      options: Options(responseType: ResponseType.bytes),
+    );
+    if (response.statusCode == 200) {
+      return MemoryImage(Uint8List.fromList(response.data));
+    }
+    throw Exception('Failed to load thumbnail: ${response.statusCode}');
   }
 }

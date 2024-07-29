@@ -155,7 +155,7 @@ class WasteSorterRecordedDataState extends State<WasteSorterRecordedData> {
                                       ),
                                     ),
                                     Text(
-                                      '(${(_recycleRecordsCount / (_recyclableCount == 0 ? 1 : _recyclableCount) * 100).toStringAsFixed(0)}%)',
+                                      '(${(_recyclableCount / (_recycleRecordsCount == 0 ? 1 : _recycleRecordsCount) * 100).toStringAsFixed(0)}%)',
                                       style: const TextStyle(
                                         color: Colors.black,
                                         fontSize: 20,

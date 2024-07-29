@@ -81,7 +81,7 @@ class MyDevicesScreenState extends State<MyDevicesScreen> {
                     crossAxisCount: 2,
                     crossAxisSpacing: 8.0,
                     mainAxisSpacing: 8.0,
-                    childAspectRatio: 0.75,
+                    childAspectRatio: 0.7,
                   ),
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
@@ -89,7 +89,7 @@ class MyDevicesScreenState extends State<MyDevicesScreen> {
                       onTap: () => context.router.push(DeviceDetailsRoute(id: snapshot.data![index].id)),
                       borderRadius: BorderRadius.circular(10),
                       child: DeviceCard(
-                        device: snapshot.data![index],
+                        device: snapshot.data![index]
                       ),
                     );
                   },
