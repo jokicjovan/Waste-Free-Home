@@ -4,9 +4,9 @@ class ThermometerTemperatureRecord extends Record{
   final double temperature;
 
   ThermometerTemperatureRecord({
-    required DateTime timestamp,
+    required super.timestamp,
     required this.temperature,
-  }) : super(timestamp: timestamp);
+  });
 
   factory ThermometerTemperatureRecord.fromJson(Map<String, dynamic> json) {
     return ThermometerTemperatureRecord(

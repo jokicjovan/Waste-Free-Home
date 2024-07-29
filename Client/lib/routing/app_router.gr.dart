@@ -27,10 +27,17 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
-    DevicesRoute.name: (routeData) {
+    EditDeviceDetailsRoute.name: (routeData) {
+      final pathParams = routeData.inheritedPathParams;
+      final args = routeData.argsAs<EditDeviceDetailsRouteArgs>(
+          orElse: () =>
+              EditDeviceDetailsRouteArgs(id: pathParams.getString('id')));
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const DevicesScreen(),
+        child: EditDeviceDetailsScreen(
+          key: args.key,
+          id: args.id,
+        ),
       );
     },
     HubRoute.name: (routeData) {
@@ -49,6 +56,12 @@ abstract class _$AppRouter extends RootStackRouter {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
         child: const MainScreen(),
+      );
+    },
+    MyDevicesRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const MyDevicesScreen(),
       );
     },
     QRScanRoute.name: (routeData) {
@@ -100,17 +113,42 @@ class DeviceDetailsRouteArgs {
 }
 
 /// generated route for
-/// [DevicesScreen]
-class DevicesRoute extends PageRouteInfo<void> {
-  const DevicesRoute({List<PageRouteInfo>? children})
-      : super(
-          DevicesRoute.name,
+/// [EditDeviceDetailsScreen]
+class EditDeviceDetailsRoute extends PageRouteInfo<EditDeviceDetailsRouteArgs> {
+  EditDeviceDetailsRoute({
+    Key? key,
+    required String id,
+    List<PageRouteInfo>? children,
+  }) : super(
+          EditDeviceDetailsRoute.name,
+          args: EditDeviceDetailsRouteArgs(
+            key: key,
+            id: id,
+          ),
+          rawPathParams: {'id': id},
           initialChildren: children,
         );
 
-  static const String name = 'DevicesRoute';
+  static const String name = 'EditDeviceDetailsRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static const PageInfo<EditDeviceDetailsRouteArgs> page =
+      PageInfo<EditDeviceDetailsRouteArgs>(name);
+}
+
+class EditDeviceDetailsRouteArgs {
+  const EditDeviceDetailsRouteArgs({
+    this.key,
+    required this.id,
+  });
+
+  final Key? key;
+
+  final String id;
+
+  @override
+  String toString() {
+    return 'EditDeviceDetailsRouteArgs{key: $key, id: $id}';
+  }
 }
 
 /// generated route for
@@ -151,6 +189,20 @@ class MainRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'MainRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [MyDevicesScreen]
+class MyDevicesRoute extends PageRouteInfo<void> {
+  const MyDevicesRoute({List<PageRouteInfo>? children})
+      : super(
+          MyDevicesRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'MyDevicesRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
 }

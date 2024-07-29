@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:waste_free_home/models/device.dart';
+import 'package:waste_free_home/routing/app_router.dart';
 import 'package:waste_free_home/services/device_service.dart';
 import 'package:waste_free_home/utils/helper_methods.dart';
 import 'package:waste_free_home/widgets/thermometer_recorded_data.dart';
@@ -23,6 +24,10 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
   @override
   void initState() {
     super.initState();
+    _loadDevice();
+  }
+
+  void _loadDevice() {
     _deviceFuture = _deviceService.getDeviceById(widget.id);
   }
 
@@ -35,6 +40,15 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
         return ThermometerRecordedData(deviceId: deviceId);
       default:
         return const Center(child: Text('No data available for this device type.'));
+    }
+  }
+
+  Future<void> _editDetails(BuildContext context) async {
+    final result = await context.router.push(EditDeviceDetailsRoute(id: widget.id));
+    if (result == true) {
+      setState(() {
+        _loadDevice();
+      });
     }
   }
 
@@ -77,6 +91,13 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
             }
           },
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () => _editDetails(context),
+            tooltip: "Edit details",
+          ),
+        ],
       ),
       body: FutureBuilder<Device?>(
         future: _deviceFuture,
@@ -91,7 +112,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
           } else if (!deviceSnapshot.hasData || deviceSnapshot.data == null) {
             return const Center(
               child:
-                  Text('No device found', style: TextStyle(color: Colors.grey)),
+              Text('No device found', style: TextStyle(color: Colors.grey)),
             );
           } else {
             final device = deviceSnapshot.data!;
@@ -103,17 +124,17 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                     borderRadius: BorderRadius.circular(12.0),
                     child: device.imageUrl != null
                         ? Image.network(
-                            device.imageUrl!,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: 200,
-                          )
+                      device.imageUrl!,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: 200,
+                    )
                         : Image.asset(
-                            getDefaultDeviceImageUrl(device.type),
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: 200,
-                          ),
+                      getDefaultDeviceImageUrl(device.type),
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: 200,
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(12.0),
@@ -168,8 +189,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: _buildDeviceWidget(
-                              type: device.type,
-                              deviceId: widget.id),
+                              type: device.type, deviceId: widget.id),
                         ),
                       ],
                     ),

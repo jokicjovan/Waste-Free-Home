@@ -39,7 +39,7 @@ class MainScreenState extends State<MainScreen> {
               ),
             ],
           ),
-          routes: const [DevicesRoute(), HubRoute()],
+          routes: const [MyDevicesRoute(), HubRoute()],
           bottomNavigationBuilder: (_, tabsRouter) {
             return BottomNavigationBar(
               currentIndex: tabsRouter.activeIndex,

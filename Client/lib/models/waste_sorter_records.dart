@@ -6,9 +6,9 @@ class WasteSorterRecycleRecord extends Record {
   final WasteType wasteType;
 
   WasteSorterRecycleRecord({
-    required DateTime timestamp,
+    required super.timestamp,
     required this.wasteType,
-  }) : super(timestamp: timestamp);
+  });
 
   factory WasteSorterRecycleRecord.fromJson(Map<String, dynamic> json) {
     return WasteSorterRecycleRecord(
@@ -34,9 +34,9 @@ class WasteSorterLevelRecord extends Record {
   final double level;
 
   WasteSorterLevelRecord({
-    required DateTime timestamp,
+    required super.timestamp,
     required this.level,
-  }) : super(timestamp: timestamp);
+  });
 
   factory WasteSorterLevelRecord.fromJson(Map<String, dynamic> json) {
     return WasteSorterLevelRecord(

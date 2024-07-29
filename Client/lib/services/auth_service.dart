@@ -18,7 +18,7 @@ class AuthService {
     _dio = DioClient(baseUrl).dio;
   }
 
-  Future<bool> login(String email, String password) async {
+  Future<void> login(String email, String password) async {
     final response = await _dio.post(
       '/token',
       data: {
@@ -32,13 +32,11 @@ class AuthService {
       ),
     );
 
-    if (response.statusCode == 200) {
-      final token = response.data['access_token'];
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('access_token', token);
-      return true;
-    }
-    throw Exception("Failed to login");
+    if (response.statusCode != 200) throw Exception("Failed to login");
+
+    final token = response.data['access_token'];
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('access_token', token);
   }
 
   Future<String?> getToken() async {
@@ -51,17 +49,12 @@ class AuthService {
     await prefs.remove('access_token');
   }
 
-  Future<bool> isTokenValid() async {
+  Future<void> checkTokenValidity() async {
     final token = await getToken();
-    if (token == null) return false;
+    if (token == null) throw Exception("No token found");
 
-    final response = await _dio.get(
-      '/validate_token',
-    );
+    final response = await _dio.get('/validate_token');
 
-    if (response.statusCode == 200){
-      return true;
-    }
-    throw Exception("Failed to validate token");
+    if (response.statusCode != 200) throw Exception("Failed to validate token");
   }
 }

@@ -20,11 +20,10 @@ class HubService {
     if (response.statusCode == 200) {
       return true;
     }
-    print('Failed to retrieve hub status: ${response.statusCode}');
-    throw Exception('Failed to retrieve hub status: ${response.statusCode}');
+    return false;
   }
 
-  Future<bool> updateCredentials(String email, String password) async {
+  Future<void> updateCredentials(String email, String password) async {
     final response = await _dio.put(
       '/update-credentials',
       data: {
@@ -32,10 +31,8 @@ class HubService {
         'password': password,
       },
     );
-    if (response.statusCode == 200) {
-      return true;
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update credentials:  ${response.statusCode}');
     }
-    print('Failed to update credentials: ${response.statusCode}');
-    throw Exception('Failed to update credentials:  ${response.statusCode}');
   }
 }

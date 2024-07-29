@@ -42,6 +42,14 @@ async def read_device(current_device: Annotated[Device, Depends(device_dependenc
     return current_device
 
 
+@device_router.put(device_router_root_path + "/{device_id}", tags=["Devices"], response_model=schemas.Device)
+async def update_device(
+        current_device: Annotated[Device, Depends(device_dependency)],
+        device_schema: schemas.DeviceUpdate,
+        db: Session = Depends(get_postgres_db)):
+    return base_device_service.update_device(db=db, device_id=current_device.id, device_schema=device_schema)
+
+
 @device_router.post(device_router_root_path + "/link/{device_id}", tags=["Devices"], response_model=schemas.Device)
 async def link_with_device(
         current_user: Annotated[RegularUser, Depends(user_dependency([Role.REGULAR_USER]))],

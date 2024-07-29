@@ -8,7 +8,7 @@ import 'package:waste_free_home/models/record.dart';
 class WasteSorterRecordedData extends StatefulWidget {
   final String deviceId;
 
-  const WasteSorterRecordedData({Key? key, required this.deviceId}) : super(key: key);
+  const WasteSorterRecordedData({super.key, required this.deviceId});
 
   @override
   WasteSorterRecordedDataState createState() => WasteSorterRecordedDataState();

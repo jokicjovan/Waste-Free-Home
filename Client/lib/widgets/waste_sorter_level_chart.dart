@@ -5,7 +5,7 @@ import 'package:waste_free_home/models/waste_sorter_records.dart';
 class WasteSorterLevelChart extends StatelessWidget {
   final List<WasteSorterLevelRecord> data;
 
-  WasteSorterLevelChart({required this.data});
+  const WasteSorterLevelChart({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {

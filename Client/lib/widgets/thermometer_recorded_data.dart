@@ -8,7 +8,7 @@ import 'package:waste_free_home/models/record.dart';
 class ThermometerRecordedData extends StatefulWidget {
   final String deviceId;
 
-  const ThermometerRecordedData({Key? key, required this.deviceId}) : super(key: key);
+  const ThermometerRecordedData({super.key, required this.deviceId});
 
   @override
   ThermometerRecordedDataState createState() => ThermometerRecordedDataState();

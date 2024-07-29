@@ -41,3 +41,12 @@ def create_device(db: Session, device_schema: schemas.DeviceCreate):
     db.commit()
     db.refresh(db_device)
     return db_device
+
+
+def update_device(db: Session, device_id: UUID, device_schema: schemas.DeviceUpdate):
+    db_device = get_device(db, device_id)
+    db_device.title = device_schema.title
+    db_device.description = device_schema.description
+    db.commit()
+    db.refresh(db_device)
+    return db_device

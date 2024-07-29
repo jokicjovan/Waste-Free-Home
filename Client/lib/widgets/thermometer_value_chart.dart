@@ -5,7 +5,7 @@ import 'package:waste_free_home/models/thermometer_records.dart';
 class ThermometerTemperatureChart extends StatelessWidget {
   final List<ThermometerTemperatureRecord> data;
 
-  ThermometerTemperatureChart({required this.data});
+  const ThermometerTemperatureChart({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {

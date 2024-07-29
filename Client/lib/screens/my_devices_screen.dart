@@ -6,14 +6,14 @@ import 'package:waste_free_home/services/device_service.dart';
 import 'package:waste_free_home/widgets/device_card.dart';
 
 @RoutePage()
-class DevicesScreen extends StatefulWidget {
-  const DevicesScreen({super.key});
+class MyDevicesScreen extends StatefulWidget {
+  const MyDevicesScreen({super.key});
 
   @override
-  State<DevicesScreen> createState() => DevicesScreenState();
+  State<MyDevicesScreen> createState() => MyDevicesScreenState();
 }
 
-class DevicesScreenState extends State<DevicesScreen> {
+class MyDevicesScreenState extends State<MyDevicesScreen> {
   final DeviceService _deviceService = DeviceService();
   late Future<List<Device>> _devicesFuture;
 
@@ -30,7 +30,7 @@ class DevicesScreenState extends State<DevicesScreen> {
   }
 
   Future<void> _showLinkWithDeviceDialog() async {
-    final result = await context.router.push(QRScanRoute());
+    final result = await context.router.push(const QRScanRoute());
     if (result != null) {
       _linkDevice(result.toString());
     }
