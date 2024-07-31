@@ -31,17 +31,20 @@ class WasteSorterRecycleRecord extends Record {
 }
 
 class WasteSorterLevelRecord extends Record {
-  final double level;
+  final double recyclableLevel;
+  final double nonRecyclableLevel;
 
   WasteSorterLevelRecord({
     required super.timestamp,
-    required this.level,
+    required this.recyclableLevel,
+    required this.nonRecyclableLevel,
   });
 
   factory WasteSorterLevelRecord.fromJson(Map<String, dynamic> json) {
     return WasteSorterLevelRecord(
       timestamp: DateTime.parse(json['timestamp']),
-      level: json['level'],
+      recyclableLevel: json['recyclable_level'],
+      nonRecyclableLevel: json['non_recyclable_level'],
     );
   }
 
@@ -49,7 +52,8 @@ class WasteSorterLevelRecord extends Record {
   Map<String, dynamic> toJson() {
     return {
       ...super.toJson(),
-      'level': level,
+      'recyclable_level': recyclableLevel,
+      'non_recyclable_level': nonRecyclableLevel,
     };
   }
 }

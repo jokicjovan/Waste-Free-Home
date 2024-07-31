@@ -63,4 +63,8 @@ class RecordService {
       throw Exception('Failed to load records');
     }
   }
+
+  String getWsConnection(String deviceId){
+    return "ws://$address:$port$endpoint/$deviceId";
+  }
 }

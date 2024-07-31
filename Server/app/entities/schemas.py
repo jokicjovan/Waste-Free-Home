@@ -79,7 +79,8 @@ class WasteSorterRecycleRecord(BaseRecord):
 
 
 class WasteSorterLevelRecord(BaseRecord):
-    level: float
+    recyclable_level: float
+    non_recyclable_level: float
 
     class Config:
         use_enum_values = True

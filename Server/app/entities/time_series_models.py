@@ -28,8 +28,11 @@ class WasteSorterLevelRecord(timescale_base):
 
     timestamp = Column(TIMESTAMP, primary_key=True, server_default=func.now())
     device_id = Column(UUID(as_uuid=True), index=True, unique=False, nullable=False)
-    level = Column(Float, nullable=False)
+    recyclable_level = Column(Float, nullable=False)
+    non_recyclable_level = Column(Float, nullable=False)
 
     __table_args__ = (
-        CheckConstraint('level >= 0.0 AND level <= 100.0', name='waste_level_range'),
+        CheckConstraint('recyclable_level >= 0.0 AND recyclable_level <= 100.0', name='waste_recyclable_level_range'),
+        CheckConstraint('non_recyclable_level >= 0.0 AND non_recyclable_level <= 100.0',
+                        name='waste_non_recyclable_level_range'),
     )

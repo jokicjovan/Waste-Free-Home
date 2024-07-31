@@ -45,10 +45,10 @@ packages:
     dependency: "direct main"
     description:
       name: auto_route
-      sha256: ab85e8e50907d88e3d5ba3190fe17623643c2faaa989eb7fbbb346028591f8ca
+      sha256: "0956ad9f1604d863f3de9df3bf478ae5eb26c637ba997493a1898152ebcdac90"
       url: "https://pub.dev"
     source: hosted
-    version: "9.0.0"
+    version: "9.1.0"
   auto_route_generator:
     dependency: "direct dev"
     description:
@@ -766,7 +766,7 @@ packages:
     source: hosted
     version: "0.1.6"
   web_socket_channel:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: web_socket_channel
       sha256: "9f187088ed104edd8662ca07af4b124465893caf063ba29758f97af57e61da8f"

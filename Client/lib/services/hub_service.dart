@@ -15,6 +15,8 @@ class HubService {
     _dio = DioClient(baseUrl).dio;
   }
 
+
+
   Future<bool> isOnline() async {
     final response = await _dio.get('/health');
     if (response.statusCode == 200) {

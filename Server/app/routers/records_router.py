@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from fastapi.websockets import WebSocket, WebSocketDisconnect
 
-from app.core.authorization import device_dependency
+from app.core.authorization import device_dependency, get_current_user, get_current_active_user
 from app.core.websockets import records_ws_manager
 from app.db.postgres import get_postgres_db
 from app.db.timescale import get_timescale_db
@@ -56,9 +56,22 @@ async def get_device_records(current_device: Annotated[Device, Depends(device_de
 
 @records_router.websocket(records_router_root_path + "/{device_id}")
 async def device_records_websocket(websocket: WebSocket, device_id: uuid.UUID):
-    await records_ws_manager.connect(websocket, device_id)
+    # Check client authorization
+    token = websocket.headers.get('Authorization')
+    if not token:
+        await websocket.close()
+        return
+    if token.startswith("Bearer "):
+        token = token[7:]
+    db = next(get_postgres_db())
+    current_user = await get_current_user(token=token, db=db)
+    current_user = await get_current_active_user(current_user=current_user)
+    device = device_dependency(device_id=device_id, current_user=current_user, db=db)
+
+    # Connect to websocket
+    await records_ws_manager.connect(websocket, device.id)
     try:
         while True:
             await websocket.receive_text()
     except WebSocketDisconnect:
-        await records_ws_manager.disconnect(websocket, device_id)
+        await records_ws_manager.disconnect(websocket, device.id)
