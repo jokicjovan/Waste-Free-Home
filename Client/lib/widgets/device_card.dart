@@ -88,7 +88,7 @@ class DeviceCard extends StatelessWidget {
                       fontSize: 14.0,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 10),
                   Text(
                     device.description,
                     style: const TextStyle(

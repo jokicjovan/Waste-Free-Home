@@ -59,7 +59,7 @@ class _QRScanScreenState extends State<QRScanScreen> {
             child: Center(
               child: (result != null)
                   ? Text('Barcode Type: ${result!.format}   Data: ${result!.code}')
-                  : const Text('Scan a QR code on device'),
+                  : const Text('Scan a QR code on device to link'),
             ),
           )
         ],

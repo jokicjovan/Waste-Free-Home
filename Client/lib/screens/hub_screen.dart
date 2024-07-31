@@ -71,108 +71,129 @@ class HubScreenState extends State<HubScreen> {
                       child: FutureBuilder<bool>(
                         future: _isOnlineFuture,
                         builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
                             return const CircularProgressIndicator();
-                          } else if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          } else if (snapshot.hasData) {
-                            bool isOnline = snapshot.data!;
-                            return Row(
-                              mainAxisSize: MainAxisSize.min,
+                          } else if (snapshot.hasError || !snapshot.hasData || (snapshot.hasData && !snapshot.data!)) {
+                            return const Column(
                               children: [
-                                Icon(
-                                  Icons.circle,
-                                  color: isOnline ? Colors.green : Colors.red,
-                                  size: 24.0,
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.circle,
+                                      color: Colors.red,
+                                      size: 24.0,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      'Hub is Offline',
+                                      style: TextStyle(fontSize: 18),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  isOnline ? 'Hub is Online' : 'Hub is Offline',
-                                  style: const TextStyle(fontSize: 18),
-                                ),
+                                SizedBox(height: 40),
+                                Text('Hub must be online to update credentials'),
                               ],
                             );
                           } else {
-                            return const Text('Unknown error');
+                            bool isOnline = snapshot.data!;
+                            return Column(
+                              children: [
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.circle,
+                                      color: isOnline ? Colors.green : Colors.red,
+                                      size: 24.0,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      isOnline ? 'Hub is Online' : 'Hub is Offline',
+                                      style: const TextStyle(fontSize: 18),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 40),
+                                if (isOnline)
+                                  Container(
+                                    margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                                    padding: const EdgeInsets.all(10.0),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Theme.of(context).colorScheme.secondary),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                                            color: Theme.of(context).colorScheme.secondary,
+                                            child: const Text(
+                                              'Hub Credentials',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Form(
+                                          key: _formKey,
+                                          child: Column(
+                                            children: [
+                                              TextFormField(
+                                                controller: _emailController,
+                                                decoration: const InputDecoration(
+                                                    labelText: 'Email',
+                                                    border: OutlineInputBorder()),
+                                                validator: (value) {
+                                                  if (value == null || value.isEmpty) {
+                                                    return 'Please enter your email';
+                                                  }
+                                                  return null;
+                                                },
+                                              ),
+                                              const SizedBox(height: 16),
+                                              TextFormField(
+                                                controller: _passwordController,
+                                                decoration: const InputDecoration(
+                                                    labelText: 'Password',
+                                                    border: OutlineInputBorder()),
+                                                obscureText: true,
+                                                validator: (value) {
+                                                  if (value == null || value.isEmpty) {
+                                                    return 'Please enter your password';
+                                                  }
+                                                  return null;
+                                                },
+                                              ),
+                                              const SizedBox(height: 20),
+                                              FilledButton(
+                                                onPressed: _updateCredentials,
+                                                style: FilledButton.styleFrom(
+                                                    minimumSize: const Size(160, 40)),
+                                                child: const Text(
+                                                  'Update Credentials',
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.normal,
+                                                      fontSize: 14),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                              ],
+                            );
                           }
                         },
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                      padding: const EdgeInsets.all(10.0),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            color: Theme.of(context).colorScheme.secondary),
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Column(
-                        children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10.0),
-                              color: Theme.of(context).colorScheme.secondary,
-                              child: const Text(
-                                'Hub Credentials',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Form(
-                            key: _formKey,
-                            child: Column(
-                              children: [
-                                TextFormField(
-                                  controller: _emailController,
-                                  decoration: const InputDecoration(
-                                      labelText: 'Email',
-                                      border: OutlineInputBorder()),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter your email';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const SizedBox(height: 16),
-                                TextFormField(
-                                  controller: _passwordController,
-                                  decoration: const InputDecoration(
-                                      labelText: 'Password',
-                                      border: OutlineInputBorder()),
-                                  obscureText: true,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter your password';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const SizedBox(height: 20),
-                                FilledButton(
-                                  onPressed: _updateCredentials,
-                                  style: FilledButton.styleFrom(
-                                      minimumSize: const Size(160, 40)),
-                                  child: const Text(
-                                    'Update Credentials',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.normal,
-                                        fontSize: 14),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
                       ),
                     ),
                   ],

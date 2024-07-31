@@ -132,8 +132,14 @@ class ThermometerRecordedDataState extends State<ThermometerRecordedData> {
                               _lastRecordTemperature != null
                                   ? '${_lastRecordTemperature!.toStringAsFixed(1)}°C'
                                   : 'N/A',
-                              style: const TextStyle(
-                                color: Colors.black,
+                              style: TextStyle(
+                                color: _lastRecordTemperature != null
+                                    ? (_lastRecordTemperature! < 15
+                                    ? Colors.lightBlue
+                                    : _lastRecordTemperature! > 28
+                                    ? Colors.orange
+                                    : Colors.black)
+                                    : Colors.black,
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),

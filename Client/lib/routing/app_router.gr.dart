@@ -9,70 +9,6 @@
 
 part of 'app_router.dart';
 
-abstract class _$AppRouter extends RootStackRouter {
-  // ignore: unused_element
-  _$AppRouter({super.navigatorKey});
-
-  @override
-  final Map<String, PageFactory> pagesMap = {
-    DeviceDetailsRoute.name: (routeData) {
-      final pathParams = routeData.inheritedPathParams;
-      final args = routeData.argsAs<DeviceDetailsRouteArgs>(
-          orElse: () => DeviceDetailsRouteArgs(id: pathParams.getString('id')));
-      return AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: DeviceDetailsScreen(
-          key: args.key,
-          id: args.id,
-        ),
-      );
-    },
-    EditDeviceDetailsRoute.name: (routeData) {
-      final pathParams = routeData.inheritedPathParams;
-      final args = routeData.argsAs<EditDeviceDetailsRouteArgs>(
-          orElse: () =>
-              EditDeviceDetailsRouteArgs(id: pathParams.getString('id')));
-      return AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: EditDeviceDetailsScreen(
-          key: args.key,
-          id: args.id,
-        ),
-      );
-    },
-    HubRoute.name: (routeData) {
-      return AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: const HubScreen(),
-      );
-    },
-    LoginRoute.name: (routeData) {
-      return AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: const LoginScreen(),
-      );
-    },
-    MainRoute.name: (routeData) {
-      return AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: const MainScreen(),
-      );
-    },
-    MyDevicesRoute.name: (routeData) {
-      return AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: const MyDevicesScreen(),
-      );
-    },
-    QRScanRoute.name: (routeData) {
-      return AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: const QRScanScreen(),
-      );
-    },
-  };
-}
-
 /// generated route for
 /// [DeviceDetailsScreen]
 class DeviceDetailsRoute extends PageRouteInfo<DeviceDetailsRouteArgs> {
@@ -86,14 +22,21 @@ class DeviceDetailsRoute extends PageRouteInfo<DeviceDetailsRouteArgs> {
             key: key,
             id: id,
           ),
-          rawPathParams: {'id': id},
           initialChildren: children,
         );
 
   static const String name = 'DeviceDetailsRoute';
 
-  static const PageInfo<DeviceDetailsRouteArgs> page =
-      PageInfo<DeviceDetailsRouteArgs>(name);
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<DeviceDetailsRouteArgs>();
+      return DeviceDetailsScreen(
+        key: args.key,
+        id: args.id,
+      );
+    },
+  );
 }
 
 class DeviceDetailsRouteArgs {
@@ -131,8 +74,19 @@ class EditDeviceDetailsRoute extends PageRouteInfo<EditDeviceDetailsRouteArgs> {
 
   static const String name = 'EditDeviceDetailsRoute';
 
-  static const PageInfo<EditDeviceDetailsRouteArgs> page =
-      PageInfo<EditDeviceDetailsRouteArgs>(name);
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final pathParams = data.inheritedPathParams;
+      final args = data.argsAs<EditDeviceDetailsRouteArgs>(
+          orElse: () =>
+              EditDeviceDetailsRouteArgs(id: pathParams.getString('id')));
+      return EditDeviceDetailsScreen(
+        key: args.key,
+        id: args.id,
+      );
+    },
+  );
 }
 
 class EditDeviceDetailsRouteArgs {
@@ -162,7 +116,12 @@ class HubRoute extends PageRouteInfo<void> {
 
   static const String name = 'HubRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const HubScreen();
+    },
+  );
 }
 
 /// generated route for
@@ -176,7 +135,12 @@ class LoginRoute extends PageRouteInfo<void> {
 
   static const String name = 'LoginRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const LoginScreen();
+    },
+  );
 }
 
 /// generated route for
@@ -190,7 +154,12 @@ class MainRoute extends PageRouteInfo<void> {
 
   static const String name = 'MainRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const MainScreen();
+    },
+  );
 }
 
 /// generated route for
@@ -204,7 +173,12 @@ class MyDevicesRoute extends PageRouteInfo<void> {
 
   static const String name = 'MyDevicesRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const MyDevicesScreen();
+    },
+  );
 }
 
 /// generated route for
@@ -218,5 +192,10 @@ class QRScanRoute extends PageRouteInfo<void> {
 
   static const String name = 'QRScanRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const QRScanScreen();
+    },
+  );
 }

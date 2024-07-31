@@ -12,7 +12,7 @@ import 'package:waste_free_home/screens/main_screen.dart';
 part 'app_router.gr.dart';
 
 @AutoRouterConfig()
-class AppRouter extends _$AppRouter {
+class AppRouter extends RootStackRouter {
   @override
   List<AutoRoute> get routes => [
         AutoRoute(path: '/login', page: LoginRoute.page),
@@ -30,7 +30,7 @@ class AppRouter extends _$AppRouter {
             path: '/devices/:id/edit',
             page: EditDeviceDetailsRoute.page,
             guards: [AuthGuard()]),
-    AutoRoute(
+        AutoRoute(
             path: '/devices/link/qr-scan',
             page: QRScanRoute.page,
             guards: [AuthGuard()]),

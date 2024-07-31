@@ -7,6 +7,7 @@ import 'package:waste_free_home/utils/helper_methods.dart';
 import 'package:waste_free_home/widgets/thermometer_recorded_data.dart';
 import 'package:waste_free_home/widgets/waste_sorter_recorded_data.dart';
 
+@RoutePage()
 class DeviceDetailsScreen extends StatefulWidget {
   final String id;
 
@@ -36,7 +37,7 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
       builder: (context) {
         return Dialog(
           backgroundColor: Colors.transparent,
-          insetPadding: EdgeInsets.all(10),
+          insetPadding: const EdgeInsets.all(10),
           child: GestureDetector(
             onTap: () => Navigator.of(context).pop(),
             child: InteractiveViewer(
@@ -140,10 +141,8 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                   GestureDetector(
                     onTap: () async {
                       final imageProvider = await _deviceService.getDeviceThumbnail(device.id);
-                      if (imageProvider != null) {
-                        _showFullScreenImage(context, imageProvider);
-                      }
-                    },
+                      _showFullScreenImage(context, imageProvider);
+                                        },
                     child: ClipRRect(
                       borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
                       child: FutureBuilder<ImageProvider>(

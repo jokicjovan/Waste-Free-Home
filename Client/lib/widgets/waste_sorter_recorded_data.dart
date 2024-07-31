@@ -156,8 +156,10 @@ class WasteSorterRecordedDataState extends State<WasteSorterRecordedData> {
                                     ),
                                     Text(
                                       '(${(_recyclableCount / (_recycleRecordsCount == 0 ? 1 : _recycleRecordsCount) * 100).toStringAsFixed(0)}%)',
-                                      style: const TextStyle(
-                                        color: Colors.black,
+                                      style: TextStyle(
+                                        color: (_recyclableCount / (_recycleRecordsCount == 0 ? 1 : _recycleRecordsCount) * 100) < 50
+                                            ? Colors.red
+                                            : Colors.green,
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -190,8 +192,10 @@ class WasteSorterRecordedDataState extends State<WasteSorterRecordedData> {
                                   _lastRecordLevel != null
                                       ? '${_lastRecordLevel!.toStringAsFixed(1)}%'
                                       : 'N/A',
-                                  style: const TextStyle(
-                                    color: Colors.black,
+                                  style: TextStyle(
+                                    color: _lastRecordLevel != null && _lastRecordLevel! > 80
+                                        ? Colors.red
+                                        : Colors.black,
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -205,6 +209,7 @@ class WasteSorterRecordedDataState extends State<WasteSorterRecordedData> {
                                 ),
                               ],
                             ),
+
                           ),
                         ),
                       ),

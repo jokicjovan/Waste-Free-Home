@@ -61,7 +61,7 @@ class ThermometerTemperatureChart extends StatelessWidget {
               ),
             ),
             topTitles: const AxisTitles(
-              axisNameWidget: Text('Timestamp',
+              axisNameWidget: Text('Date',
                   style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,

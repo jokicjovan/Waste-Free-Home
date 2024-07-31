@@ -63,7 +63,7 @@ class MyDevicesScreenState extends State<MyDevicesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
         child: RefreshIndicator(
           onRefresh: _refreshDevices,
           child: FutureBuilder<List<Device>>(

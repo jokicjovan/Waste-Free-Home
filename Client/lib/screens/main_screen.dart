@@ -30,28 +30,34 @@ class MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return AutoTabsScaffold(
-          appBarBuilder: (_, index) => AppBar(
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.logout),
-                onPressed: () => _logout(context),
-                tooltip: "Log out",
-              ),
-            ],
-          ),
-          routes: const [MyDevicesRoute(), HubRoute()],
-          bottomNavigationBuilder: (_, tabsRouter) {
-            return BottomNavigationBar(
-              currentIndex: tabsRouter.activeIndex,
-              onTap: tabsRouter.setActiveIndex,
-              items: const [
-                BottomNavigationBarItem(
-                    label: 'Devices', icon: Icon(Icons.device_thermostat)),
-                BottomNavigationBarItem(
-                    label: 'Hub', icon: Icon(Icons.device_hub)),
-              ],
-            );
-          },
+      appBarBuilder: (context, index) {
+        final tabsRouter = AutoTabsRouter.of(context);
+        final currentIndex = tabsRouter.activeIndex;
+
+        return AppBar(
+          title: Text(currentIndex == 0 ? 'My devices' : 'Hub', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () => _logout(context),
+              tooltip: "Log out",
+            ),
+          ],
         );
+      },
+      routes: const [MyDevicesRoute(), HubRoute()],
+      bottomNavigationBuilder: (_, tabsRouter) {
+        return BottomNavigationBar(
+          currentIndex: tabsRouter.activeIndex,
+          onTap: tabsRouter.setActiveIndex,
+          items: const [
+            BottomNavigationBarItem(
+                label: 'Devices', icon: Icon(Icons.device_thermostat)),
+            BottomNavigationBarItem(
+                label: 'Hub', icon: Icon(Icons.device_hub)),
+          ],
+        );
+      },
+    );
   }
 }
