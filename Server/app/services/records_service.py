@@ -31,7 +31,14 @@ async def record_device_data(
         device_id: UUID,
         record):
     device = base_device_service.get_device(models_db, device_id)
-    model_class = schema_model_map[device.type][record.__class__]
+
+    model_map = schema_model_map.get(device.type)
+    if model_map is None:
+        return None
+    model_class = model_map.get(record.__class__)
+    if model_class is None:
+        return None
+
     model_instance = model_class(device_id=device_id, **record.model_dump(exclude={'timestamp'}))
     time_series_db.add(model_instance)
     time_series_db.commit()
