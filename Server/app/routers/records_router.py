@@ -56,22 +56,27 @@ async def get_device_records(current_device: Annotated[Device, Depends(device_de
 
 @records_router.websocket(records_router_root_path + "/{device_id}")
 async def device_records_websocket(websocket: WebSocket, device_id: uuid.UUID):
-    # Check client authorization
+    # Get token from headers
     token = websocket.headers.get('Authorization')
     if not token:
         await websocket.close()
         return
     if token.startswith("Bearer "):
         token = token[7:]
-    db = next(get_postgres_db())
-    current_user = await get_current_user(token=token, db=db)
-    current_user = await get_current_active_user(current_user=current_user)
-    device = device_dependency(device_id=device_id, current_user=current_user, db=db)
 
-    # Connect to websocket
-    await records_ws_manager.connect(websocket, device.id)
+    # Get database session
+    db = next(get_postgres_db())
     try:
-        while True:
-            await websocket.receive_text()
-    except WebSocketDisconnect:
-        await records_ws_manager.disconnect(websocket, device.id)
+        # Check client authorization
+        current_user = await get_current_user(token=token, db=db)
+        current_user = await get_current_active_user(current_user=current_user)
+        device = device_dependency(device_id=device_id, current_user=current_user, db=db)
+
+        await records_ws_manager.connect(websocket, device.id)
+        try:
+            while True:
+                await websocket.receive_text()
+        except WebSocketDisconnect:
+            await records_ws_manager.disconnect(websocket, device.id)
+    finally:
+        db.close()

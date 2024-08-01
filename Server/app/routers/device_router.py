@@ -88,7 +88,7 @@ async def create_device(
 
 
 @device_router.get(device_router_root_path + "/{device_id}/thumbnail", tags=["Devices"],)
-async def get_device_thumbnail(
+async def read_device_thumbnail(
         current_device: Annotated[Device, Depends(device_dependency)]
 ):
     thumbnail_path = image_service.get_device_thumbnail_path(current_device.id)

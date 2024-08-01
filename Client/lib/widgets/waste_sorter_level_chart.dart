@@ -138,9 +138,9 @@ class WasteSorterLevelChart extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
-              _buildLegend(color: Colors.orange, text: 'Recyclable Level'),
+              _buildLegend(color: Colors.orange, text: 'Recyclable'),
               const SizedBox(width: 16),
-              _buildLegend(color: Colors.grey, text: 'Non-Recyclable Level'),
+              _buildLegend(color: Colors.grey, text: 'Non-Recyclable'),
             ],
           ),
         ),

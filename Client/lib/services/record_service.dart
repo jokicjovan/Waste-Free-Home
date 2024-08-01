@@ -19,7 +19,7 @@ class RecordService {
     _dio = DioClient(baseUrl).dio;
   }
 
-  Future<Map<String, List<dynamic>>> getRecords(String deviceId,
+  Future<Map<String, List<dynamic>>> fetchRecords(String deviceId,
       {DateTime? startDate, DateTime? endDate}) async {
     final queryParams = <String, dynamic>{};
     if (startDate != null) {

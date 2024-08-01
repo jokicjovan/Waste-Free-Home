@@ -4,8 +4,8 @@ import 'package:waste_free_home/models/device.dart';
 import 'package:waste_free_home/routing/app_router.dart';
 import 'package:waste_free_home/services/device_service.dart';
 import 'package:waste_free_home/utils/helper_methods.dart';
-import 'package:waste_free_home/widgets/thermometer_recorded_data.dart';
-import 'package:waste_free_home/widgets/waste_sorter_recorded_data.dart';
+import 'package:waste_free_home/widgets/thermometer_records_data.dart';
+import 'package:waste_free_home/widgets/waste_sorter_records_data.dart';
 
 @RoutePage()
 class DeviceDetailsScreen extends StatefulWidget {
@@ -53,9 +53,9 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
       {required DeviceType type, required String deviceId}) {
     switch (type) {
       case DeviceType.WASTE_SORTER:
-        return WasteSorterRecordedData(deviceId: deviceId);
+        return WasteSorterRecordsData(deviceId: deviceId);
       case DeviceType.THERMOMETER:
-        return ThermometerRecordedData(deviceId: deviceId);
+        return ThermometerRecordsData(deviceId: deviceId);
       default:
         return const Center(child: Text('No data available for this device type.'));
     }
@@ -224,17 +224,8 @@ class _DeviceDetailsScreenState extends State<DeviceDetailsScreen> {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(12.0),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.black, width: 1),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: _buildDeviceWidget(
-                              type: device.type, deviceId: widget.id),
-                        ),
+                        _buildDeviceWidget(
+                            type: device.type, deviceId: widget.id),
                       ],
                     ),
                   ),
