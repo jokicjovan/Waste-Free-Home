@@ -9,51 +9,100 @@
 
 part of 'app_router.dart';
 
-abstract class _$AppRouter extends RootStackRouter {
-  // ignore: unused_element
-  _$AppRouter({super.navigatorKey});
-
-  @override
-  final Map<String, PageFactory> pagesMap = {
-    DevicesRoute.name: (routeData) {
-      return AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: const DevicesScreen(),
-      );
-    },
-    HubRoute.name: (routeData) {
-      return AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: const HubScreen(),
-      );
-    },
-    LoginRoute.name: (routeData) {
-      return AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: const LoginScreen(),
-      );
-    },
-    MainRoute.name: (routeData) {
-      return AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: const MainScreen(),
-      );
-    },
-  };
-}
-
 /// generated route for
-/// [DevicesScreen]
-class DevicesRoute extends PageRouteInfo<void> {
-  const DevicesRoute({List<PageRouteInfo>? children})
-      : super(
-          DevicesRoute.name,
+/// [DeviceDetailsScreen]
+class DeviceDetailsRoute extends PageRouteInfo<DeviceDetailsRouteArgs> {
+  DeviceDetailsRoute({
+    Key? key,
+    required String id,
+    List<PageRouteInfo>? children,
+  }) : super(
+          DeviceDetailsRoute.name,
+          args: DeviceDetailsRouteArgs(
+            key: key,
+            id: id,
+          ),
           initialChildren: children,
         );
 
-  static const String name = 'DevicesRoute';
+  static const String name = 'DeviceDetailsRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<DeviceDetailsRouteArgs>();
+      return DeviceDetailsScreen(
+        key: args.key,
+        id: args.id,
+      );
+    },
+  );
+}
+
+class DeviceDetailsRouteArgs {
+  const DeviceDetailsRouteArgs({
+    this.key,
+    required this.id,
+  });
+
+  final Key? key;
+
+  final String id;
+
+  @override
+  String toString() {
+    return 'DeviceDetailsRouteArgs{key: $key, id: $id}';
+  }
+}
+
+/// generated route for
+/// [EditDeviceDetailsScreen]
+class EditDeviceDetailsRoute extends PageRouteInfo<EditDeviceDetailsRouteArgs> {
+  EditDeviceDetailsRoute({
+    Key? key,
+    required String id,
+    List<PageRouteInfo>? children,
+  }) : super(
+          EditDeviceDetailsRoute.name,
+          args: EditDeviceDetailsRouteArgs(
+            key: key,
+            id: id,
+          ),
+          rawPathParams: {'id': id},
+          initialChildren: children,
+        );
+
+  static const String name = 'EditDeviceDetailsRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final pathParams = data.inheritedPathParams;
+      final args = data.argsAs<EditDeviceDetailsRouteArgs>(
+          orElse: () =>
+              EditDeviceDetailsRouteArgs(id: pathParams.getString('id')));
+      return EditDeviceDetailsScreen(
+        key: args.key,
+        id: args.id,
+      );
+    },
+  );
+}
+
+class EditDeviceDetailsRouteArgs {
+  const EditDeviceDetailsRouteArgs({
+    this.key,
+    required this.id,
+  });
+
+  final Key? key;
+
+  final String id;
+
+  @override
+  String toString() {
+    return 'EditDeviceDetailsRouteArgs{key: $key, id: $id}';
+  }
 }
 
 /// generated route for
@@ -67,7 +116,12 @@ class HubRoute extends PageRouteInfo<void> {
 
   static const String name = 'HubRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const HubScreen();
+    },
+  );
 }
 
 /// generated route for
@@ -81,7 +135,12 @@ class LoginRoute extends PageRouteInfo<void> {
 
   static const String name = 'LoginRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const LoginScreen();
+    },
+  );
 }
 
 /// generated route for
@@ -95,5 +154,48 @@ class MainRoute extends PageRouteInfo<void> {
 
   static const String name = 'MainRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const MainScreen();
+    },
+  );
+}
+
+/// generated route for
+/// [MyDevicesScreen]
+class MyDevicesRoute extends PageRouteInfo<void> {
+  const MyDevicesRoute({List<PageRouteInfo>? children})
+      : super(
+          MyDevicesRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'MyDevicesRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const MyDevicesScreen();
+    },
+  );
+}
+
+/// generated route for
+/// [QRScanScreen]
+class QRScanRoute extends PageRouteInfo<void> {
+  const QRScanRoute({List<PageRouteInfo>? children})
+      : super(
+          QRScanRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'QRScanRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const QRScanScreen();
+    },
+  );
 }

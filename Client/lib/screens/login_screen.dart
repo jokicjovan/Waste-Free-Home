@@ -29,8 +29,8 @@ class LoginScreenState extends State<LoginScreen> {
       final email = _emailController.text;
       final password = _passwordController.text;
 
-      final success = await _authService.login(email, password);
-      if (success) {
+      try {
+        await _authService.login(email, password);
         context.router.replaceAll([const MainRoute()]);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -40,7 +40,7 @@ class LoginScreenState extends State<LoginScreen> {
             ),
           ),
         );
-      } else {
+      } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           backgroundColor: Colors.redAccent,
           content: DefaultTextStyle(
@@ -61,7 +61,7 @@ class LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-                'assets/logo_full.png',
+                'assets/images/logo_full.png',
                 width: 300,
                 height: 300,
               ),
@@ -77,7 +77,7 @@ class LoginScreenState extends State<LoginScreen> {
                         controller: _emailController,
                         decoration: const InputDecoration(
                           labelText: 'Email',
-                          border: OutlineInputBorder(),
+                          border: UnderlineInputBorder(),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -89,11 +89,11 @@ class LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _passwordController,
+                        obscureText: true,
                         decoration: const InputDecoration(
                           labelText: 'Password',
-                          border: OutlineInputBorder(),
+                          border: UnderlineInputBorder(),
                         ),
-                        obscureText: true,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your password';
@@ -102,26 +102,18 @@ class LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                       const SizedBox(height: 32),
-                      ElevatedButton(
+                      FilledButton(
                         onPressed: _login,
-                        style: ElevatedButton.styleFrom(
+                        style: FilledButton.styleFrom(
                           minimumSize: const Size(200, 50),
-                          backgroundColor:
-                              Theme.of(context).colorScheme.secondary,
-                          textStyle: TextStyle(
-                            color: Theme.of(context).colorScheme.onSecondary,
-                          ),
                           shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.circular(10)),
                           ),
                         ),
-                        child: Text(
+                        child: const Text(
                           'Log in',
                           style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 20,
-                            color: Theme.of(context).colorScheme.onSecondary,
-                          ),
+                              fontWeight: FontWeight.normal, fontSize: 20),
                         ),
                       ),
                     ],

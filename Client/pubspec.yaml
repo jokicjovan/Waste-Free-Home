@@ -30,11 +30,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.13.6
-  http_interceptor: ^1.0.1
+  dio: ^5.5.0+1
   shared_preferences: ^2.0.6
-  auto_route: ^7.2.0
-
+  auto_route: ^9.0.0
+  flutter_dotenv: ^5.0.2
+  fl_chart: ^0.68.0
+  flutter_date_range_picker: ^0.1.1
+  qr_code_scanner: ^1.0.1
+  web_socket_channel: ^3.0.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -43,15 +46,21 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  auto_route_generator: ^7.1.1
+  auto_route_generator: ^9.0.0
   build_runner: ^2.4.4
+  flutter_launcher_icons: ^0.13.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^3.0.0
+  flutter_lints: ^4.0.0
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo_small.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -71,6 +80,7 @@ flutter:
 
   assets:
     - assets/
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

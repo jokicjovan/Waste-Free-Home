@@ -16,17 +16,21 @@ class TokenData(BaseModel):
 
 class DeviceBase(BaseModel):
     title: str
-    description: str = ""
-    type: DeviceType
+    description: str
 
 
 class DeviceCreate(DeviceBase):
+    type: DeviceType
+
+
+class DeviceUpdate(DeviceBase):
     pass
 
 
 class Device(DeviceBase):
     id: UUID
     owner_id: UUID
+    type: DeviceType
 
     class Config:
         from_attributes = True
@@ -75,7 +79,8 @@ class WasteSorterRecycleRecord(BaseRecord):
 
 
 class WasteSorterLevelRecord(BaseRecord):
-    level: float
+    recyclable_level: float
+    non_recyclable_level: float
 
     class Config:
         use_enum_values = True

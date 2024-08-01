@@ -40,7 +40,7 @@ class BaseDevice(postgres_base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, nullable=False)
     title = Column(String, nullable=False)
-    description = Column(String, nullable=True)
+    description = Column(String, nullable=False)
     owner_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete='SET NULL'), nullable=True)
     owner = relationship("RegularUser", back_populates="devices")
 

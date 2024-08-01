@@ -1,19 +1,19 @@
+from datetime import timedelta
 from typing import Annotated
 
 from fastapi import APIRouter
-from datetime import timedelta
-from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from app.core.authorization import user_dependency
 from app.core.config import settings
-from app.db.postgres import get_postgres_db
 from app.core.tokens import create_access_token
+from app.db.postgres import get_postgres_db
 from app.entities.enums import Role
 from app.entities.models import BaseUser
+from app.entities.schemas import Token
 from app.services.base_user_service import authenticate_base_user
-from app.entities.schemas import Token, Admin
 
 auth_router = APIRouter()
 auth_router_root_path = "/API/auth"
