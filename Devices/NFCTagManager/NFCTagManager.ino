@@ -39,13 +39,13 @@ void writeNfcTag() {
   productId = readFromConsole();
 
   // Input recyclable
-  Serial.println("Enter recyclable (true/false):");
+  Serial.println("Enter if product is recyclable (true/false):");
   String recyclableStr = readFromConsole();
   recyclable = (recyclableStr.equalsIgnoreCase("true"));
 
   // Construct NdefMessage with the input data
   NdefMessage message = NdefMessage();
-  message.addTextRecord("productId:" + productId + ";type:" + (recyclable ? "RECYCABLE" : "NONRECYCABLE"));
+  message.addTextRecord("productId:" + productId + ";waste_type:" + (recyclable ? "RECYCLABLE" : "NON_RECYCLABLE"));
 
   // Try to write to the NFC tag until success
   while (true) {
