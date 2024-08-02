@@ -4,19 +4,7 @@
 #include <NfcAdapter.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
-
-
-// Pins
-static const int recycableServoPin = 26;
-static const int nonrecycableServoPin = 13;
-
-// MQTT Settings
-// const char* ssid = "your_SSID";
-// const char* password = "your_PASSWORD";
-// const char* mqttServer = "broker.hivemq.com"; // Replace with your MQTT broker address
-// const int mqttPort = 1883; // Default MQTT port
-// const char* mqttUser = "your_MQTT_username"; // Replace with your MQTT username
-// const char* mqttPassword = "your_MQTT_password"; // Replace with your MQTT password
+#include "config.h"
 
 // Variables
 PN532_I2C pn532_i2c(Wire);
