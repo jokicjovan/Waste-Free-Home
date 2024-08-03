@@ -1,7 +1,9 @@
+import asyncio
+import threading
 from contextlib import asynccontextmanager
-
 from fastapi import FastAPI
 
+from app.core.MDNS_service import MDNSService
 from app.entities.schemas import UserCredentials
 from app.core.config import settings
 from app.core.utils import update_env_file, get_jwt
@@ -15,7 +17,15 @@ async def lifespan(app: FastAPI):
     mqtt_client.on_message = on_message
     mqtt_client.connect(settings.mqtt_broker_address, settings.mqtt_broker_port, 60)
     mqtt_client.loop_start()
-    yield
+
+    loop = asyncio.get_event_loop()
+    mdns_service = await loop.run_in_executor(None, MDNSService)
+    try:
+        yield
+    finally:
+        await loop.run_in_executor(None, mdns_service.close)
+        mqtt_client.loop_stop()
+        mqtt_client.disconnect()
 
 
 app = FastAPI(lifespan=lifespan)

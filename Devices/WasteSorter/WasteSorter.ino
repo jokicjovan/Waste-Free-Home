@@ -1,7 +1,8 @@
-#include <ESP32Servo.h>
-#include <PN532_I2C.h>
 #include <PN532.h>
+#include <PN532_I2C.h>
 #include <NfcAdapter.h>
+#include <ESP32Servo.h>
+#include <HCSR04.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include "config.h"
@@ -11,6 +12,8 @@ PN532_I2C pn532_i2c(Wire);
 NfcAdapter nfc = NfcAdapter(pn532_i2c);
 Servo recycableServo;
 Servo nonrecycableServo;
+UltraSonicDistanceSensor recycableDistance(recycableDistanceTrigPin, recycableDistanceEchoPin);
+UltraSonicDistanceSensor nonrecycableDistance(nonrecycableDistanceTrigPin, nonrecycableDistanceEchoPin);
 WiFiClient espClient;
 PubSubClient client(espClient);
 
@@ -91,14 +94,8 @@ void readNfcTag() {
           // Extract the waste_type
           String wasteType = extractWasteType(payloadString);
           if (wasteType.length() > 0) {
-            Serial.print("Extracted waste_type: ");
-            Serial.println(wasteType);
-            
             if (wasteType == "RECYCLABLE" || wasteType == "NON_RECYCLABLE") {
-              openLidForWasteType(wasteType); // Open coresponding lid
-              String topic = String("devices/") + deviceId;
-              String message = "{\"waste_type\":\"" + wasteType + "\"}";
-              client.publish(topic.c_str(), message.c_str()); // Publish on MQTT
+              handleThrownWaste(wasteType);
             } else {
               Serial.println("Invalid waste_type.");
             }
@@ -129,6 +126,35 @@ String extractWasteType(String payload) {
   return payload.substring(startIndex, endIndex);
 }
 
+void handleThrownWaste(String wasteType) {
+  // Open corresponding lid
+  openLidForWasteType(wasteType);
+
+  // Calculate fillage for both waste types
+  float recyclableDistanceValue = recycableDistance.measureDistanceCm();
+  float nonRecyclableDistanceValue = nonrecycableDistance.measureDistanceCm();
+  int recyclableFillage = calculateFillage(recyclableDistanceValue);
+  int nonRecyclableFillage = calculateFillage(nonRecyclableDistanceValue);
+
+  // Publish messages to MQTT
+  String topic = String("devices/") + deviceId;
+  
+  // Publish waste type message
+  String waste_type_message = "{\"waste_type\":\"" + wasteType + "\"}";
+  client.publish(topic.c_str(), waste_type_message.c_str());
+  
+  // Publish fillage message
+  String fillage_message = "{\"recyclable_level\":\"" + String(recyclableFillage) + "\", \"non_recyclable_level\":\"" + String(nonRecyclableFillage) + "\"}";
+  client.publish(topic.c_str(), fillage_message.c_str());
+
+  // Print for debug
+  Serial.print("Waste type message: ");
+  Serial.println(waste_type_message.c_str());
+  Serial.print("Waste level message: ");
+  Serial.println(fillage_message.c_str());
+}
+
+
 void openLidForWasteType(String wasteType) {
   if (wasteType == "RECYCLABLE") {
     recycableServo.write(140);
@@ -140,3 +166,12 @@ void openLidForWasteType(String wasteType) {
     nonrecycableServo.write(80);
   }
 }
+
+int calculateFillage(float distance) {
+  if (distance > binSize) distance = 30;
+  if (distance < 0) distance = 0;
+
+  int percentage_filled = map(distance, 0, 30, 100, 0);
+  return percentage_filled;
+}
+
