@@ -8,49 +8,53 @@
 #include <HCSR04.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include <ESPmDNS.h>
 #include "config.h"
-
-// Constants
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-#define OLED_RESET -1
 
 // Variables
 PN532_I2C pn532_i2c(Wire);
-NfcAdapter nfc = NfcAdapter(pn532_i2c);
+NfcAdapter nfc(pn532_i2c);
 Servo recycableServo;
 Servo nonrecycableServo;
-UltraSonicDistanceSensor recycableDistance(recycableDistanceTrigPin, recycableDistanceEchoPin);
-UltraSonicDistanceSensor nonrecycableDistance(nonrecycableDistanceTrigPin, nonrecycableDistanceEchoPin);
+UltraSonicDistanceSensor recycableDistance(RECYCABLE_DISTANCE_TRIG_PIN, RECYCABLE_DISTANCE_ECHO_PIN);
+UltraSonicDistanceSensor nonrecycableDistance(NON_RECYCABLE_DISTANCE_TRIG_PIN, NON_RECYCABLE_DISTANCE_ECHO_PIN);
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 WiFiClient espClient;
 PubSubClient client(espClient);
+String hubHostname = "";
+int hubPort = 1883;
 
 // Function prototypes
-void openLidForWasteType(String wasteType);
+void readNfcTag();
+void reconnectMQTT();
+String extractWasteType(const String& payload);
+void handleThrownWaste(const String& wasteType);
+void openLidForWasteType(const String& wasteType);
 int calculateFillage(float distance);
 void updateDisplay(int recyclableFillage, int nonRecyclableFillage);
 
 void setup() {
+  Wire.begin();
   Serial.begin(9600);
 
   // Initialize NFC
   nfc.begin();
 
   // Initialize Servos
-  recycableServo.attach(recycableServoPin);
-  nonrecycableServo.attach(nonrecycableServoPin);
+  recycableServo.attach(RECYCABLE_SERVO_PIN);
+  nonrecycableServo.attach(NON_RECYCABLE_SERVO_PIN);
   recycableServo.write(80);
   nonrecycableServo.write(80);
 
   // Initialize the SSD1306 display
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+  if(!display.begin(SSD1306_SWITCHCAPVCC, SSD1306_I2C_ADDRESS)) {
     Serial.println(F("SSD1306 allocation failed"));
     for(;;);
   }
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
+  display.display();
 
   // Connect to WiFi
   WiFi.begin(ssid, password);
@@ -60,8 +64,65 @@ void setup() {
   }
   Serial.println("Connected to WiFi");
 
-  // Connect to MQTT broker
-  client.setServer(mqttHostname, mqttPort);
+  // Initialize mDNS
+  if (!MDNS.begin("WasteSorter")) {
+    Serial.println("Error starting mDNS");
+    return;
+  }
+}
+
+void loop() {
+  // Discover mDNS service if hostname is empty
+  if (hubHostname.isEmpty() || hubPort == -1) {
+    discoverMDNSService();
+  }
+
+  // Connect to MQTT broker if hubHostname is found and  clientis not connected
+  if (!hubHostname.isEmpty() && hubPort != -1 && !client.connected()) {
+    reconnectMQTT();
+  }
+
+  // MQTT loop
+  client.loop();
+
+  // Tag handling
+  readNfcTag();
+  
+  delay(1000);
+}
+
+void discoverMDNSService() {
+  int n = MDNS.queryService("_http", "_tcp");
+  if (n == 0) {
+    Serial.println("No mDNS services found");
+  } else {
+    Serial.print(n);
+    Serial.println(" service(s) found");
+    for (int i = 0; i < n; i++) {
+      String newServiceName = MDNS.hostname(i);
+      String newHubHostname = MDNS.address(i).toString();
+      int newHubPort = MDNS.port(i);
+      if (newServiceName == "waste-free-home-hub"){
+        Serial.print("Service Name: ");
+        Serial.println(newServiceName);
+        Serial.print("Service Type: ");
+        Serial.println("_http._tcp");
+        Serial.print("Host IP: ");
+        Serial.println(newHubHostname);
+        Serial.print("Port: ");
+        Serial.println(newHubPort);
+
+        hubHostname = newHubHostname;
+        //hubPort = newHubPort;
+        client.setServer(hubHostname.c_str(), hubPort);
+        break;
+      }
+    }
+  }
+}
+
+
+void reconnectMQTT() {
   while (!client.connected()) {
     if (client.connect("WasteSorter")) {
       Serial.println("Connected to MQTT broker");
@@ -71,25 +132,6 @@ void setup() {
       delay(2000);
     }
   }
-}
-
-void loop() {
-  if (!client.connected()) {
-    while (!client.connected()) {
-      if (client.connect("WasteSorter")) {
-        Serial.println("Reconnected to MQTT broker");
-      } else {
-        Serial.print("Failed to connect, rc=");
-        Serial.print(client.state());
-        delay(2000);
-      }
-    }
-  }
-  client.loop();
-
-  readNfcTag();
-  
-  delay(1000);
 }
 
 void readNfcTag() {
@@ -122,7 +164,7 @@ void readNfcTag() {
         // Extract the waste_type
         String wasteType = extractWasteType(payloadString);
         if (wasteType.length() > 0) {
-          if (wasteType == "RECYCLABLE" || wasteType == "NON_RECYCLABLE") {
+          if (wasteType == WASTE_TYPE_RECYCLABLE || wasteType == WASTE_TYPE_NON_RECYCLABLE) {
             handleThrownWaste(wasteType);
           } else {
             Serial.println("Invalid waste_type.");
@@ -137,21 +179,19 @@ void readNfcTag() {
   }
 }
 
-String extractWasteType(String payload) {
-  String wasteTypePrefix = "waste_type:";
+String extractWasteType(const String& payload) {
+  const String wasteTypePrefix = "waste_type:";
   int startIndex = payload.indexOf(wasteTypePrefix);
-  if (startIndex == -1) {
-    return "";
-  }
+  if (startIndex == -1) return "";
+
   startIndex += wasteTypePrefix.length();
   int endIndex = payload.indexOf(';', startIndex);
-  if (endIndex == -1) {
-    endIndex = payload.length();
-  }
+  if (endIndex == -1) endIndex = payload.length();
+
   return payload.substring(startIndex, endIndex);
 }
 
-void handleThrownWaste(String wasteType) {
+void handleThrownWaste(const String& wasteType) {
   // Open corresponding lid
   openLidForWasteType(wasteType);
 
@@ -165,7 +205,7 @@ void handleThrownWaste(String wasteType) {
   updateDisplay(recyclableFillage, nonRecyclableFillage);
 
   // Publish messages to MQTT
-  String topic = String("devices/") + deviceId;
+  String topic = String(MQTT_TOPIC_PREFIX) + deviceId;
   
   // Publish waste type message
   String waste_type_message = "{\"waste_type\":\"" + wasteType + "\"}";
@@ -182,12 +222,12 @@ void handleThrownWaste(String wasteType) {
   Serial.println(fillage_message.c_str());
 }
 
-void openLidForWasteType(String wasteType) {
-  if (wasteType == "RECYCLABLE") {
+void openLidForWasteType(const String& wasteType) {
+  if (wasteType == WASTE_TYPE_RECYCLABLE) {
     recycableServo.write(140);
     delay(5000);
     recycableServo.write(80);
-  } else if (wasteType == "NON_RECYCLABLE") {
+  } else if (wasteType == WASTE_TYPE_NON_RECYCLABLE) {
     nonrecycableServo.write(30);
     delay(5000);
     nonrecycableServo.write(80);
@@ -195,11 +235,8 @@ void openLidForWasteType(String wasteType) {
 }
 
 int calculateFillage(float distance) {
-  if (distance > binSize) distance = 30;
-  if (distance < 0) distance = 0;
-
-  int percentage_filled = map(distance, 0, 30, 100, 0);
-  return percentage_filled;
+  distance = constrain(distance, 0, binSize);
+  return map(distance, 0, binSize, 100, 0);
 }
 
 void updateDisplay(int recyclableFillage, int nonRecyclableFillage) {
@@ -235,6 +272,3 @@ void updateDisplay(int recyclableFillage, int nonRecyclableFillage) {
 
   display.display();
 }
-
-
-
