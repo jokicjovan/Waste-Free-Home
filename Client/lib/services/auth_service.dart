@@ -11,7 +11,7 @@ class AuthService {
   late Dio _dio;
 
   AuthService() {
-    address = dotenv.env['server_address']!;
+    address = dotenv.env['server_hostname']!;
     port = dotenv.env['server_port']!;
     endpoint = dotenv.env['server_auth_endpoint']!;
     baseUrl = "http://$address:$port$endpoint";

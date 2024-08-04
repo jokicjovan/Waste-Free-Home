@@ -10,13 +10,13 @@ class Settings(BaseSettings):
 
     postgres_user: str
     postgres_password: str
-    postgres_host: str
+    postgres_hostname: str
     postgres_port: str
     postgres_name: str
 
     timescale_user: str
     timescale_password: str
-    timescale_host: str
+    timescale_hostname: str
     timescale_port: str
     timescale_name: str
 

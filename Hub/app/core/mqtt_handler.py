@@ -22,7 +22,7 @@ def on_message(client, userdata, msg):
 
 
 def send_device_record_to_server(device_id, record):
-    url = f"http://{settings.server_address}:{settings.server_port}/{settings.server_records_endpoint}/{device_id}"
+    url = f"http://{settings.server_hostname}:{settings.server_port}/{settings.server_records_endpoint}/{device_id}"
     headers = {
         "Authorization": f"Bearer {settings.jwt}"
     }

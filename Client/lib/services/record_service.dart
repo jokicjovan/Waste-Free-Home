@@ -12,7 +12,7 @@ class RecordService {
   late Dio _dio;
 
   RecordService() {
-    address = dotenv.env['server_address']!;
+    address = dotenv.env['server_hostname']!;
     port = dotenv.env['server_port']!;
     endpoint = dotenv.env['server_records_endpoint']!;
     baseUrl = "http://$address:$port$endpoint";

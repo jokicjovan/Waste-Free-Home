@@ -6,7 +6,7 @@ from app.entities.models import postgres_base
 
 POSTGRES_DATABASE_URL = (
     f"postgresql://{settings.postgres_user}:{settings.postgres_password}@"
-    f"{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_name}"
+    f"{settings.postgres_hostname}:{settings.postgres_port}/{settings.postgres_name}"
 )
 
 postgres_engine = create_engine(POSTGRES_DATABASE_URL)

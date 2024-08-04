@@ -15,8 +15,8 @@ class MDNSService:
         self.service_info = zeroconf.ServiceInfo(
             type_="_http._tcp.local.",
             name="WasteFreeHomeHub._http._tcp.local.",
-            addresses=[socket.inet_aton(settings.hub_address)],
-            port=8000,
+            addresses=[socket.inet_aton(settings.hub_hostname)],
+            port=settings.hub_port,
             properties=desc,
             server="waste-free-home-hub.local."
         )

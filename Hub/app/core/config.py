@@ -3,13 +3,14 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     hub_id: str
-    hub_address: str
+    hub_hostname: str
+    hub_port: int
 
-    mqtt_broker_address: str
+    mqtt_broker_hostname: str
     mqtt_broker_port: int
     devices_topic: str
 
-    server_address: str
+    server_hostname: str
     server_port: int
     server_records_endpoint: str
 

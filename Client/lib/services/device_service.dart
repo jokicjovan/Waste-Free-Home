@@ -14,7 +14,7 @@ class DeviceService {
   late Dio _dio;
 
   DeviceService() {
-    address = dotenv.env['server_address']!;
+    address = dotenv.env['server_hostname']!;
     port = dotenv.env['server_port']!;
     endpoint = dotenv.env['server_devices_endpoint']!;
     baseUrl = "http://$address:$port$endpoint";

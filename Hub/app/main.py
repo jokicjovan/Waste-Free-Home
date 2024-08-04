@@ -1,5 +1,4 @@
 import asyncio
-import threading
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
@@ -15,7 +14,7 @@ async def lifespan(app: FastAPI):
     get_jwt()
     mqtt_client.on_connect = on_connect
     mqtt_client.on_message = on_message
-    mqtt_client.connect(settings.mqtt_broker_address, settings.mqtt_broker_port, 60)
+    mqtt_client.connect(settings.mqtt_broker_hostname, settings.mqtt_broker_port, 60)
     mqtt_client.loop_start()
 
     loop = asyncio.get_event_loop()

@@ -6,7 +6,7 @@ from app.entities.time_series_models import timescale_base
 
 TIMESCALE_DATABASE_URL = (
     f"postgresql://{settings.timescale_user}:{settings.timescale_password}@"
-    f"{settings.timescale_host}:{settings.timescale_port}/{settings.timescale_name}"
+    f"{settings.timescale_hostname}:{settings.timescale_port}/{settings.timescale_name}"
 )
 timescale_engine = create_engine(TIMESCALE_DATABASE_URL)
 timescale_session_local = sessionmaker(autocommit=False, bind=timescale_engine)

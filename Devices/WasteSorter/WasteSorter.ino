@@ -61,7 +61,7 @@ void setup() {
   Serial.println("Connected to WiFi");
 
   // Connect to MQTT broker
-  client.setServer(mqttServer, mqttPort);
+  client.setServer(mqttHostname, mqttPort);
   while (!client.connected()) {
     if (client.connect("WasteSorter")) {
       Serial.println("Connected to MQTT broker");
