@@ -21,8 +21,8 @@ UltraSonicDistanceSensor nonrecycableDistance(NON_RECYCABLE_DISTANCE_TRIG_PIN, N
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 WiFiClient espClient;
 PubSubClient client(espClient);
-String hubHostname = "";
-int hubPort = 1883;
+String hubIp = "";
+int mqttPort = 1883;
 
 // Function prototypes
 void readNfcTag();
@@ -72,13 +72,13 @@ void setup() {
 }
 
 void loop() {
-  // Discover mDNS service if hostname is empty
-  if (hubHostname.isEmpty() || hubPort == -1) {
+  // Discover mDNS service if hubIp is empty
+  if (hubIp.isEmpty() || mqttPort == -1) {
     discoverMDNSService();
   }
 
-  // Connect to MQTT broker if hubHostname is found and  clientis not connected
-  if (!hubHostname.isEmpty() && hubPort != -1 && !client.connected()) {
+  // Connect to MQTT broker if hubIp is found and client not connected
+  if (!hubIp.isEmpty() && mqttPort != -1 && !client.connected()) {
     reconnectMQTT();
   }
 
@@ -100,31 +100,34 @@ void discoverMDNSService() {
     Serial.println(" service(s) found");
     for (int i = 0; i < n; i++) {
       String newServiceName = MDNS.hostname(i);
-      String newHubHostname = MDNS.address(i).toString();
+      String newHubIp = MDNS.address(i).toString();
       int newHubPort = MDNS.port(i);
+
+      if (newServiceName.endsWith(".local")) {
+        newServiceName = newServiceName.substring(0, newServiceName.length() - 6);
+      }
+
       if (newServiceName == HUB_SERVICE_NAME){
         Serial.print("Service Name: ");
         Serial.println(newServiceName);
         Serial.print("Service Type: ");
         Serial.println("_http._tcp");
         Serial.print("Host IP: ");
-        Serial.println(newHubHostname);
+        Serial.println(newHubIp);
         Serial.print("Port: ");
         Serial.println(newHubPort);
 
-        hubHostname = newHubHostname;
-        //hubPort = newHubPort;
-        client.setServer(hubHostname.c_str(), hubPort);
+        hubIp = newHubIp;
+        client.setServer(hubIp.c_str(), mqttPort);
         break;
       }
     }
   }
 }
 
-
 void reconnectMQTT() {
   while (!client.connected()) {
-    if (client.connect("WasteSorter")) {
+    if (client.connect(DEVICE_ID)) {
       Serial.println("Connected to MQTT broker");
     } else {
       Serial.print("Failed to connect, rc=");
@@ -204,7 +207,7 @@ void handleThrownWaste(const String& wasteType) {
   // Update display with fill levels
   updateDisplay(recyclableFillage, nonRecyclableFillage);
 
-  // Publish messages to MQTT
+  // Define topic for messages
   String topic = String(MQTT_TOPIC_PREFIX) + DEVICE_ID;
   
   // Publish waste type message
