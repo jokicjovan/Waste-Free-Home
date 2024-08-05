@@ -64,8 +64,9 @@ class BaseRecord(BaseModel):
     timestamp: datetime.datetime | None = None
 
 
-class ThermometerRecord(BaseRecord):
+class ThermoHumidMeterRecord(BaseRecord):
     temperature: float
+    humidity: float
 
     class Config:
         use_enum_values = True

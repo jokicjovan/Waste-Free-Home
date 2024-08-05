@@ -7,12 +7,13 @@ from app.entities.enums import WasteType
 timescale_base = declarative_base()
 
 
-class ThermometerRecord(timescale_base):
-    __tablename__ = "thermometer"
+class ThermoHumidMeterRecord(timescale_base):
+    __tablename__ = "thermo_humid_meter"
 
     timestamp = Column(TIMESTAMP, primary_key=True, server_default=func.now())
     device_id = Column(UUID(as_uuid=True), index=True, unique=False, nullable=False)
     temperature = Column(Float, nullable=False)
+    humidity = Column(Float, nullable=False)
 
 
 class WasteSorterRecycleRecord(timescale_base):

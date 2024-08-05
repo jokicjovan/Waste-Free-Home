@@ -25,6 +25,7 @@ def update_env_file(key, value):
 
 
 def get_jwt():
+    # Define the URL
     url = f"http://{settings.server_hostname}:{settings.server_port}/{settings.server_auth_endpoint}"
     headers = {
         "Content-Type": "application/x-www-form-urlencoded"

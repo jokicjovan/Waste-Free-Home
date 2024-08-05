@@ -5,7 +5,7 @@ from app.entities import schemas, models
 from app.entities.enums import DeviceType
 
 model_mapping = {
-    DeviceType.THERMOMETER: models.Thermometer,
+    DeviceType.THERMO_HUMID_METER: models.ThermoHumidMeter,
     DeviceType.WASTE_SORTER: models.WasteSorter
 }
 

@@ -102,7 +102,7 @@ void discoverMDNSService() {
       String newServiceName = MDNS.hostname(i);
       String newHubHostname = MDNS.address(i).toString();
       int newHubPort = MDNS.port(i);
-      if (newServiceName == "waste-free-home-hub"){
+      if (newServiceName == HUB_SERVICE_NAME){
         Serial.print("Service Name: ");
         Serial.println(newServiceName);
         Serial.print("Service Type: ");
@@ -205,7 +205,7 @@ void handleThrownWaste(const String& wasteType) {
   updateDisplay(recyclableFillage, nonRecyclableFillage);
 
   // Publish messages to MQTT
-  String topic = String(MQTT_TOPIC_PREFIX) + deviceId;
+  String topic = String(MQTT_TOPIC_PREFIX) + DEVICE_ID;
   
   // Publish waste type message
   String waste_type_message = "{\"waste_type\":\"" + wasteType + "\"}";
@@ -235,8 +235,8 @@ void openLidForWasteType(const String& wasteType) {
 }
 
 int calculateFillage(float distance) {
-  distance = constrain(distance, 0, binSize);
-  return map(distance, 0, binSize, 100, 0);
+  distance = constrain(distance, 0, BIN_SIZE);
+  return map(distance, 0, BIN_SIZE, 100, 0);
 }
 
 void updateDisplay(int recyclableFillage, int nonRecyclableFillage) {
@@ -259,7 +259,7 @@ void updateDisplay(int recyclableFillage, int nonRecyclableFillage) {
   // Set text color based on background
   display.setTextColor(recyclableFillHeight > (rectHeight / 2) ? SSD1306_BLACK : SSD1306_WHITE); // Black if fill is above middle
   display.setCursor(leftRectX + 10, rectY + (rectHeight / 2) - 4); // Center text vertically
-  display.print("NR");
+  display.print("R");
 
   // Draw right rectangle with fill
   display.drawRect(rightRectX, rectY, rectWidth, rectHeight, SSD1306_WHITE); // Draw border
@@ -268,7 +268,7 @@ void updateDisplay(int recyclableFillage, int nonRecyclableFillage) {
   // Set text color based on background
   display.setTextColor(nonRecyclableFillHeight > (rectHeight / 2) ? SSD1306_BLACK : SSD1306_WHITE); // Black if fill is above middle
   display.setCursor(rightRectX + 10, rectY + (rectHeight / 2) - 4); // Center text vertically
-  display.print("R");
+  display.print("NR");
 
   display.display();
 }

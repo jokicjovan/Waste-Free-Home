@@ -7,7 +7,7 @@ class Role(str, Enum):
 
 
 class DeviceType(str, Enum):
-    THERMOMETER = "THERMOMETER"
+    THERMO_HUMID_METER = "THERMO_HUMID_METER"
     WASTE_SORTER = "WASTE_SORTER"
 
 

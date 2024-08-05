@@ -11,22 +11,26 @@ from app.core.mqtt_handler import mqtt_client, on_connect, on_message
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Initialize JWT and MQTT client
     get_jwt()
     mqtt_client.on_connect = on_connect
     mqtt_client.on_message = on_message
     mqtt_client.connect(settings.mqtt_broker_hostname, settings.mqtt_broker_port, 60)
     mqtt_client.loop_start()
 
+    # Initialize mDNS service
     loop = asyncio.get_event_loop()
     mdns_service = await loop.run_in_executor(None, MDNSService)
     try:
         yield
     finally:
+        # Cleanup resources
         await loop.run_in_executor(None, mdns_service.close)
         mqtt_client.loop_stop()
         mqtt_client.disconnect()
 
 
+# Create FastAPI app with custom lifespan
 app = FastAPI(lifespan=lifespan)
 
 
@@ -41,4 +45,4 @@ async def update_credentials(credentials: UserCredentials):
     settings.user_password = credentials.password
     update_env_file("user_email", credentials.email)
     update_env_file("user_password", credentials.password)
-    return "Success"
+    return {"message": "Success"}

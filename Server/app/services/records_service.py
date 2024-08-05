@@ -8,8 +8,8 @@ from app.entities.enums import DeviceType
 from app.services import base_device_service
 
 schema_model_map = {
-    DeviceType.THERMOMETER: {
-        schemas.ThermometerRecord: time_series_models.ThermometerRecord
+    DeviceType.THERMO_HUMID_METER: {
+        schemas.ThermoHumidMeterRecord: time_series_models.ThermoHumidMeterRecord
     },
     DeviceType.WASTE_SORTER: {
         schemas.WasteSorterRecycleRecord: time_series_models.WasteSorterRecycleRecord,

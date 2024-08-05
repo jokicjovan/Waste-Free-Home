@@ -50,9 +50,9 @@ class BaseDevice(postgres_base):
     }
 
 
-class Thermometer(BaseDevice):
+class ThermoHumidMeter(BaseDevice):
     __mapper_args__ = {
-        'polymorphic_identity': 'THERMOMETER'
+        'polymorphic_identity': 'THERMO_HUMID_METER'
     }
 
 
