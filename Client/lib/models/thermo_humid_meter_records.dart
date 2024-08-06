@@ -1,15 +1,15 @@
 import 'package:waste_free_home/models/record.dart';
 
-class ThermometerTemperatureRecord extends Record{
+class ThermoHumidMeterTemperatureRecord extends Record{
   final double temperature;
 
-  ThermometerTemperatureRecord({
+  ThermoHumidMeterTemperatureRecord({
     required super.timestamp,
     required this.temperature,
   });
 
-  factory ThermometerTemperatureRecord.fromJson(Map<String, dynamic> json) {
-    return ThermometerTemperatureRecord(
+  factory ThermoHumidMeterTemperatureRecord.fromJson(Map<String, dynamic> json) {
+    return ThermoHumidMeterTemperatureRecord(
       timestamp: DateTime.parse(json['timestamp']),
       temperature: json['temperature'],
     );

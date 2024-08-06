@@ -5,7 +5,7 @@ from app.entities import schemas, models
 from app.entities.enums import DeviceType
 
 model_mapping = {
-    DeviceType.THERMOMETER: models.Thermometer,
+    DeviceType.THERMO_HUMID_METER: models.ThermoHumidMeter,
     DeviceType.WASTE_SORTER: models.WasteSorter
 }
 
@@ -47,6 +47,14 @@ def update_device(db: Session, device_id: UUID, device_schema: schemas.DeviceUpd
     db_device = get_device(db, device_id)
     db_device.title = device_schema.title
     db_device.description = device_schema.description
+    db.commit()
+    db.refresh(db_device)
+    return db_device
+
+
+def toggle_device(db: Session, device_id: UUID, is_online: bool):
+    db_device = get_device(db, device_id)
+    db_device.is_online = is_online
     db.commit()
     db.refresh(db_device)
     return db_device

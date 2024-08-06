@@ -14,7 +14,7 @@ class DeviceService {
   late Dio _dio;
 
   DeviceService() {
-    address = dotenv.env['server_address']!;
+    address = dotenv.env['server_hostname']!;
     port = dotenv.env['server_port']!;
     endpoint = dotenv.env['server_devices_endpoint']!;
     baseUrl = "http://$address:$port$endpoint";
@@ -39,7 +39,7 @@ class DeviceService {
   }
 
   Future<Device> linkWithDevice(String id) async {
-    final response = await _dio.post('/link/$id');
+    final response = await _dio.post('/$id/link');
     if (response.statusCode == 200) {
       return Device.fromJson(response.data);
     }

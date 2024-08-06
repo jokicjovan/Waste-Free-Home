@@ -4,8 +4,8 @@ String getDefaultDeviceImageUrl(DeviceType deviceType) {
   switch (deviceType) {
     case DeviceType.WASTE_SORTER:
       return 'assets/images/waste_sorter_default_opaque.png';
-    case DeviceType.THERMOMETER:
-      return 'assets/images/thermometer_default_opaque.png';
+    case DeviceType.THERMO_HUMID_METER:
+      return 'assets/images/thermo_humid_meter_default_opaque.png';
     default:
       return 'assets/images/recycling.png';
   }

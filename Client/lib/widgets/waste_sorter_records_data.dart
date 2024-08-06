@@ -77,8 +77,9 @@ class WasteSorterRecordsDataState extends State<WasteSorterRecordsData> {
 
     if (picked != null) {
       setState(() {
-        _startDate = picked.start;
-        _endDate = picked.end;
+        _startDate = DateTime(picked.start.year, picked.start.month, picked.start.day, 0, 0, 0);
+        _endDate = DateTime(picked.end.year, picked.end.month, picked.end.day, 23, 59, 59, 999);
+
         _recordsFuture = _fetchRecords(startDate: _startDate, endDate: _endDate);
       });
     }

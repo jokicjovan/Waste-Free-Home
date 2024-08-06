@@ -33,22 +33,22 @@ services:
     tty: true
 
     
-  server:
-    build:
-      context: ./Server
-      dockerfile: Dockerfile
-    container_name: fastapi_server
-    networks:
-      - server_network
-    ports:
-      - "9000:8000"
-    volumes:
-      - ./Server/app:/Server/app
-      - ./Server/requirements.txt:/Server/requirements.txt
-      - ./Server/.env:/Server/.env
-    depends_on:
-      - database
-      - time_series_database
+  # server:
+  #   build:
+  #     context: ./Server
+  #     dockerfile: Dockerfile
+  #   container_name: fastapi_server
+  #   networks:
+  #     - server_network
+  #   ports:
+  #     - "9000:8000"
+  #   volumes:
+  #     - ./Server/app:/Server/app
+  #     - ./Server/requirements.txt:/Server/requirements.txt
+  #     - ./Server/.env:/Server/.env
+  #   depends_on:
+  #     - database
+  #     - time_series_database
 
   mosquitto:
     image: eclipse-mosquitto:latest
@@ -62,22 +62,22 @@ services:
       - ./MqttBroker/data:/mosquitto/data
       - ./MqttBroker/log:/mosquitto/log
 
-  hub:
-    build:
-      context: ./Hub
-      dockerfile: Dockerfile
-    container_name: fastapi_hub
-    networks:
-      - home_network
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./Hub/app:/Hub/app
-      - ./Hub/requirements.txt:/Hub/requirements.txt
-      - ./Hub/.env:/Hub/.env
-    depends_on:
-      - mosquitto
-      - server
+  # hub:
+  #   build:
+  #     context: ./Hub
+  #     dockerfile: Dockerfile
+  #   container_name: fastapi_hub
+  #   networks:
+  #     - home_network
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - ./Hub/app:/Hub/app
+  #     - ./Hub/requirements.txt:/Hub/requirements.txt
+  #     - ./Hub/.env:/Hub/.env
+  #   depends_on:
+  #     - mosquitto
+  #     - server
 
 volumes:
   PostgresData:
