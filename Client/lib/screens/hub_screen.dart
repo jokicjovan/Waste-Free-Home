@@ -97,7 +97,7 @@ class HubScreenState extends State<HubScreen> {
             return Center(
               child: Text(
                 'Error initializing HubService: ${initializationSnapshot.error}',
-                style: TextStyle(color: Colors.red),
+                style: const TextStyle(color: Colors.red),
               ),
             );
           }

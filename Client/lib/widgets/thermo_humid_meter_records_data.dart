@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:waste_free_home/models/thermometer_records.dart';
+import 'package:waste_free_home/models/thermo_humid_meter_records.dart';
 import 'package:waste_free_home/services/auth_service.dart';
 import 'package:waste_free_home/services/record_service.dart';
 import 'package:waste_free_home/utils/helper_methods.dart';
-import 'package:waste_free_home/widgets/thermometer_temperature_chart.dart';
+import 'package:waste_free_home/widgets/thermo_humid_meter_temperature_chart.dart';
 import 'package:waste_free_home/models/record.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-class ThermometerRecordsData extends StatefulWidget {
+class ThermoHumidMeterRecordsData extends StatefulWidget {
   final String deviceId;
 
-  const ThermometerRecordsData({super.key, required this.deviceId});
+  const ThermoHumidMeterRecordsData({super.key, required this.deviceId});
 
   @override
-  ThermometerRecordsDataState createState() => ThermometerRecordsDataState();
+  ThermoHumidMeterRecordsDataState createState() => ThermoHumidMeterRecordsDataState();
 }
 
-class ThermometerRecordsDataState extends State<ThermometerRecordsData> {
+class ThermoHumidMeterRecordsDataState extends State<ThermoHumidMeterRecordsData> {
   final RecordService _recordService = RecordService();
   final AuthService _authService = AuthService();
   late Future<Map<String, List<Record>>> _recordsFuture;
@@ -74,8 +74,9 @@ class ThermometerRecordsDataState extends State<ThermometerRecordsData> {
 
     if (picked != null) {
       setState(() {
-        _startDate = picked.start;
-        _endDate = picked.end;
+        _startDate = DateTime(picked.start.year, picked.start.month, picked.start.day, 0, 0, 0);
+        _endDate = DateTime(picked.end.year, picked.end.month, picked.end.day, 23, 59, 59, 999);
+
         _recordsFuture = _fetchRecords(startDate: _startDate, endDate: _endDate);
       });
     }
@@ -91,7 +92,7 @@ class ThermometerRecordsDataState extends State<ThermometerRecordsData> {
       endDate: endDate,
     );
 
-    final temperatureRecords = data['temperatureRecords'] as List<ThermometerTemperatureRecord>;
+    final temperatureRecords = data['temperatureRecords'] as List<ThermoHumidMeterTemperatureRecord>;
 
     return {'temperatureRecords': temperatureRecords};
   }
@@ -105,7 +106,7 @@ class ThermometerRecordsDataState extends State<ThermometerRecordsData> {
       endDate: now,
     );
 
-    final temperatureRecords = data['temperatureRecords'] as List<ThermometerTemperatureRecord>;
+    final temperatureRecords = data['temperatureRecords'] as List<ThermoHumidMeterTemperatureRecord>;
 
     if (temperatureRecords.isNotEmpty) {
       setState(() {
@@ -164,7 +165,7 @@ class ThermometerRecordsDataState extends State<ThermometerRecordsData> {
                     );
                   } else {
                     final temperatureRecords = snapshot.data!['temperatureRecords']
-                    as List<ThermometerTemperatureRecord>;
+                    as List<ThermoHumidMeterTemperatureRecord>;
                     return Card(
                       elevation: 6,
                       child: Padding(
@@ -275,11 +276,11 @@ class ThermometerRecordsDataState extends State<ThermometerRecordsData> {
                     );
                   } else {
                     final temperatureRecords = recordsSnapshot.data!['temperatureRecords']
-                    as List<ThermometerTemperatureRecord>;
+                    as List<ThermoHumidMeterTemperatureRecord>;
                     return Padding(
                       padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                       child:
-                      ThermometerTemperatureChart(data: temperatureRecords),
+                      ThermoHumidMeterTemperatureChart(data: temperatureRecords),
                     );
                   }
                 },

@@ -1,4 +1,5 @@
 import datetime
+from typing import Optional
 from uuid import UUID
 from pydantic import BaseModel
 
@@ -29,8 +30,9 @@ class DeviceUpdate(DeviceBase):
 
 class Device(DeviceBase):
     id: UUID
-    owner_id: UUID
+    owner_id: Optional[UUID]
     type: DeviceType
+    is_online: bool
 
     class Config:
         from_attributes = True

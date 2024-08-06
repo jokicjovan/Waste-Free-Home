@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:waste_free_home/models/thermometer_records.dart';
+import 'package:waste_free_home/models/thermo_humid_meter_records.dart';
 import 'package:waste_free_home/models/waste_sorter_records.dart';
 import 'package:waste_free_home/utils/dio.dart';
 
@@ -43,8 +43,8 @@ class RecordService {
       final levelRecords = (data['waste_sorter_level_record'] as List?)
           ?.map((record) => WasteSorterLevelRecord.fromJson(record))
           .toList();
-      final temperatureRecords = (data['thermometer_record'] as List?)
-          ?.map((record) => ThermometerTemperatureRecord.fromJson(record))
+      final temperatureRecords = (data['thermo_humid_meter_record'] as List?)
+          ?.map((record) => ThermoHumidMeterTemperatureRecord.fromJson(record))
           .toList();
 
       if (recycleRecords != null && levelRecords != null) {

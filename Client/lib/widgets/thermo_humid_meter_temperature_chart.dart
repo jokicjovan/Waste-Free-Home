@@ -1,11 +1,11 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:waste_free_home/models/thermometer_records.dart';
+import 'package:waste_free_home/models/thermo_humid_meter_records.dart';
 
-class ThermometerTemperatureChart extends StatelessWidget {
-  final List<ThermometerTemperatureRecord> data;
+class ThermoHumidMeterTemperatureChart extends StatelessWidget {
+  final List<ThermoHumidMeterTemperatureRecord> data;
 
-  const ThermometerTemperatureChart({super.key, required this.data});
+  const ThermoHumidMeterTemperatureChart({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {

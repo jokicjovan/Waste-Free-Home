@@ -81,7 +81,7 @@ class MyDevicesScreenState extends State<MyDevicesScreen> {
                     crossAxisCount: 2,
                     crossAxisSpacing: 8.0,
                     mainAxisSpacing: 8.0,
-                    childAspectRatio: 0.7,
+                    childAspectRatio: 0.75,
                   ),
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {

@@ -50,3 +50,11 @@ def update_device(db: Session, device_id: UUID, device_schema: schemas.DeviceUpd
     db.commit()
     db.refresh(db_device)
     return db_device
+
+
+def toggle_device(db: Session, device_id: UUID, is_online: bool):
+    db_device = get_device(db, device_id)
+    db_device.is_online = is_online
+    db.commit()
+    db.refresh(db_device)
+    return db_device

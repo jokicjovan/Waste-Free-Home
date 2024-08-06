@@ -39,7 +39,7 @@ class DeviceService {
   }
 
   Future<Device> linkWithDevice(String id) async {
-    final response = await _dio.post('/link/$id');
+    final response = await _dio.post('/$id/link');
     if (response.statusCode == 200) {
       return Device.fromJson(response.data);
     }
