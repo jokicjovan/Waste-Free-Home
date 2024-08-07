@@ -198,12 +198,12 @@
 
 ### Flutter App
 - **.env File**: Configure the following settings in the `.env` file for the Flutter application, located in the `assets` folder at the Client project root:
-  - **Mandatory:**
+  - **Mandatory**:
     ```env
     server_hostname=server_hostname
     server_port=server_port
     ```
-  - **Optional**
+  - **Optional**:
     ```env
     server_auth_endpoint=/API/auth
     server_devices_endpoint=/API/devices
