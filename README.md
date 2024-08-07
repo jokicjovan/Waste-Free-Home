@@ -135,7 +135,7 @@
 ## Configuration
 
 ### Local Hub Server
-- **.env File**: Configure the following settings in the `.env` file for the Local Hub Server:
+- **.env File**: Configure the following settings in the `.env` file for the Local Hub Server. The `.env` file should be located in the root directory of the Hub project:
   - **Hub Information**:
     ```env
     hub_id=hub_id
@@ -170,7 +170,7 @@
 
 
 ### Remote Server
-- **.env File**: Configure the following settings in the `.env` file for the Remote Server:
+- **.env File**: Configure the following settings in the `.env` file for the Remote Server. The `.env` file should be located in the root directory of the Server project:
   - **Security**:
     ```env
     secret_key=secret_key
@@ -200,7 +200,7 @@
 
 
 ### Flutter App
-- **.env File**: Configure the following settings in the `.env` file for the Flutter application, located in the `assets` folder at the project root:
+- **.env File**: Configure the following settings in the `.env` file for the Flutter application, located in the `assets` folder at the Client project root:
   ```env
   server_hostname=server_hostname
   server_port=server_port
