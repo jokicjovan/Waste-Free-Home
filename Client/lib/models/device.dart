@@ -1,4 +1,3 @@
-import 'dart:ffi';
 
 enum DeviceType {
   THERMO_HUMID_METER,

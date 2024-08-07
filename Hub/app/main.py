@@ -13,9 +13,10 @@ from app.core.mqtt_handler import mqtt_client, on_connect, on_message
 async def lifespan(app: FastAPI):
     # Initialize JWT and MQTT client
     get_jwt()
+    mqtt_client.username_pw_set(settings.mqtt_username, settings.mqtt_password)
     mqtt_client.on_connect = on_connect
     mqtt_client.on_message = on_message
-    mqtt_client.connect(settings.mqtt_broker_hostname, settings.mqtt_broker_port, 60)
+    mqtt_client.connect(host=settings.mqtt_broker_hostname, port=settings.mqtt_broker_port, keepalive=60)
     mqtt_client.loop_start()
 
     # Initialize mDNS service

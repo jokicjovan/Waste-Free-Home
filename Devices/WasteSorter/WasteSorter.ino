@@ -21,8 +21,8 @@ UltraSonicDistanceSensor nonrecycableDistance(NON_RECYCABLE_DISTANCE_TRIG_PIN, N
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 WiFiClient espClient;
 PubSubClient client(espClient);
-String hubIp = "";
-int mqttPort = 1883;
+String mqttBrokerIp = "";
+int mqttBrokerPort = -1;
 
 // Function prototypes
 void readNfcTag();
@@ -72,13 +72,13 @@ void setup() {
 }
 
 void loop() {
-  // Discover mDNS service if hubIp is empty
-  if (hubIp.isEmpty() || mqttPort == -1) {
+  // Discover mDNS service if mqttBrokerIp or mqttBrokerPort are empty
+  if (mqttBrokerIp.isEmpty() || mqttBrokerPort == -1) {
     discoverMDNSService();
   }
 
-  // Connect to MQTT broker if hubIp is found and client not connected
-  if (!hubIp.isEmpty() && mqttPort != -1 && !client.connected()) {
+  // Connect to MQTT broker if mqttBrokerIp and mqttBrokerPort are found and client not connected
+  if (!mqttBrokerIp.isEmpty() && mqttBrokerPort != -1 && !client.connected()) {
     reconnectMQTT();
   }
 
@@ -92,7 +92,7 @@ void loop() {
 }
 
 void discoverMDNSService() {
-  int n = MDNS.queryService("_http", "_tcp");
+  int n = MDNS.queryService("_mqtt", "_tcp");
   if (n == 0) {
     Serial.println("No mDNS services found");
   } else {
@@ -100,25 +100,28 @@ void discoverMDNSService() {
     Serial.println(" service(s) found");
     for (int i = 0; i < n; i++) {
       String newServiceName = MDNS.hostname(i);
-      String newHubIp = MDNS.address(i).toString();
-      int newHubPort = MDNS.port(i);
+      String newMqttBrokerIp = MDNS.address(i).toString();
+      int newMqttBrokerPort = MDNS.port(i);
 
       if (newServiceName.endsWith(".local")) {
         newServiceName = newServiceName.substring(0, newServiceName.length() - 6);
       }
 
-      if (newServiceName == HUB_SERVICE_NAME){
+      Serial.println(newServiceName);
+
+      if (newServiceName == MQTT_BROKER_SERVICE_NAME){
         Serial.print("Service Name: ");
         Serial.println(newServiceName);
         Serial.print("Service Type: ");
         Serial.println("_http._tcp");
         Serial.print("Host IP: ");
-        Serial.println(newHubIp);
+        Serial.println(newMqttBrokerIp);
         Serial.print("Port: ");
-        Serial.println(newHubPort);
+        Serial.println(newMqttBrokerPort);
 
-        hubIp = newHubIp;
-        client.setServer(hubIp.c_str(), mqttPort);
+        mqttBrokerIp = newMqttBrokerIp;
+        mqttBrokerPort = newMqttBrokerPort;
+        client.setServer(mqttBrokerIp.c_str(), newMqttBrokerPort);
         break;
       }
     }
@@ -126,20 +129,24 @@ void discoverMDNSService() {
 }
 
 void reconnectMQTT() {
-  while (!client.connected()) {
-    if (client.connect(DEVICE_ID)) {
+  if (!client.connected()) {
+    // Define topic for LWT
+    String lwt_topic = String(MQTT_DEVICE_TOPIC_PREFIX) + String(DEVICE_ID) + String(MQTT_STATE_TOPIC_SUFIX);
+
+    if (client.connect(DEVICE_ID, MQTT_USERNAME, MQTT_PASSWORD, lwt_topic.c_str(), MQTT_LWT_QOS, MQTT_LWT_RETAIN, MQTT_STATE_OFFLINE_MESSAGE)) {
+      client.publish(lwt_topic.c_str(), MQTT_STATE_ONLINE_MESSAGE);
       Serial.println("Connected to MQTT broker");
     } else {
       Serial.print("Failed to connect, rc=");
       Serial.print(client.state());
-      delay(2000);
     }
   }
 }
 
 void readNfcTag() {
   Serial.println("\nPlace an NFC tag on the reader.");
-  if (nfc.tagPresent()) {
+  // Look for tag for a few seconds
+  if (nfc.tagPresent(500)) {
     NfcTag tag = nfc.read();
     if (tag.hasNdefMessage()) {
       NdefMessage message = tag.getNdefMessage();
@@ -208,15 +215,15 @@ void handleThrownWaste(const String& wasteType) {
   updateDisplay(recyclableFillage, nonRecyclableFillage);
 
   // Define topic for messages
-  String topic = String(MQTT_TOPIC_PREFIX) + DEVICE_ID;
+  String device_topic = String(MQTT_DEVICE_TOPIC_PREFIX) + DEVICE_ID + String(MQTT_RECORD_TOPIC_SUFIX);
   
   // Publish waste type message
   String waste_type_message = "{\"waste_type\":\"" + wasteType + "\"}";
-  client.publish(topic.c_str(), waste_type_message.c_str());
+  client.publish(device_topic.c_str(), waste_type_message.c_str());
   
   // Publish fillage message
   String fillage_message = "{\"recyclable_level\":\"" + String(recyclableFillage) + "\", \"non_recyclable_level\":\"" + String(nonRecyclableFillage) + "\"}";
-  client.publish(topic.c_str(), fillage_message.c_str());
+  client.publish(device_topic.c_str(), fillage_message.c_str());
 
   // Print for debug
   Serial.print("Waste type message: ");

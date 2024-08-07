@@ -37,7 +37,7 @@ class HubService {
         } else if (event.type == BonsoirDiscoveryEventType.discoveryServiceResolved) {
           print('Service resolved: ${event.service?.toJson()}');
           Map<String, dynamic>? serviceInfo = event.service?.toJson();
-          if (serviceInfo?["service.name"] == "WasteFreeHomeHub") {
+          if (serviceInfo?["service.name"] == "WasteFreeHomeHTTPHub") {
             address = serviceInfo?["service.host"];
             port = serviceInfo!["service.port"].toString();
             await setupDioClient();
