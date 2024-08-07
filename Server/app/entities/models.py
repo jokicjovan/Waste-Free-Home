@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Boolean, Column, ForeignKey, String, Enum, UUID
+from sqlalchemy import Boolean, Column, ForeignKey, String, Enum, UUID, TIMESTAMP, func
 from sqlalchemy.orm import relationship, declarative_base
 
 from app.entities.enums import DeviceType, Role
@@ -42,6 +42,7 @@ class BaseDevice(postgres_base):
     title = Column(String, nullable=False)
     description = Column(String, nullable=False)
     is_online = Column(Boolean, default=False, nullable=False)
+    linked_timestamp = Column(TIMESTAMP, primary_key=True, server_default=func.now())
     owner_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete='SET NULL'), nullable=True)
     owner = relationship("RegularUser", back_populates="devices")
 

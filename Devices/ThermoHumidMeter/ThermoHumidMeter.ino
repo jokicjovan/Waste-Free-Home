@@ -4,12 +4,30 @@
 #include <ESP8266mDNS.h>
 #include "config.h"
 
+// Macros
+// MQTT
+#define MQTT_BROKER_SERVICE_NAME "waste-free-home-mqtt-broker"
+#define MQTT_DEVICE_TOPIC_PREFIX "device/"
+#define MQTT_RECORD_TOPIC_SUFIX "/record"
+#define MQTT_STATE_TOPIC_SUFIX "/state"
+#define MQTT_STATE_OFFLINE_MESSAGE "{\"state\":\"offline\"}"
+#define MQTT_STATE_ONLINE_MESSAGE "{\"state\":\"online\"}"
+#define MQTT_LWT_RETAIN true
+#define MQTT_LWT_QOS 1
+// Sensors
+#define DHT_SENSOR_PIN 13
+#define DHT_SENSOR_TYPE DHT22
+
 // Variables
 DHT dht_sensor(DHT_SENSOR_PIN, DHT_SENSOR_TYPE);
 WiFiClient espClient;
 PubSubClient client(espClient);
 String mqttBrokerIp = "";
 int mqttBrokerPort = -1;
+
+// Function prototypes
+void discoverMDNSService();
+void reconnectMQTT();
 
 void setup() {
   Serial.begin(9600);
@@ -55,7 +73,7 @@ void loop() {
     Serial.println("Failed to read from DHT sensor!");
   } else {
     // Define topic for messages
-    String device_topic = String(MQTT_DEVICE_TOPIC_PREFIX) + DEVICE_ID + String(MQTT_RECORD_TOPIC_SUFIX);
+    String device_topic = String(MQTT_DEVICE_TOPIC_PREFIX) + String(device_id) + String(MQTT_RECORD_TOPIC_SUFIX);
     
     // Publish temperature and humidity message
     String thermo_humid_message = "{\"temperature\":\"" + String(temperature) + "\", \"humidity\":\"" + String(humidity) + "\"}";
@@ -110,9 +128,9 @@ void discoverMDNSService() {
 void reconnectMQTT() {
   if (!client.connected()) {
     // Define topic for LWT
-    String lwt_topic = String(MQTT_DEVICE_TOPIC_PREFIX) + String(DEVICE_ID) + String(MQTT_STATE_TOPIC_SUFIX);
+    String lwt_topic = String(MQTT_DEVICE_TOPIC_PREFIX) + String(device_id) + String(MQTT_STATE_TOPIC_SUFIX);
     
-    if (client.connect(DEVICE_ID, MQTT_USERNAME, MQTT_PASSWORD, lwt_topic.c_str(), MQTT_LWT_QOS, MQTT_LWT_RETAIN, MQTT_STATE_OFFLINE_MESSAGE)) {
+    if (client.connect(device_id, mqtt_username, mqtt_password, lwt_topic.c_str(), MQTT_LWT_QOS, MQTT_LWT_RETAIN, MQTT_STATE_OFFLINE_MESSAGE)) {
       client.publish(lwt_topic.c_str(), MQTT_STATE_ONLINE_MESSAGE);
       Serial.println("Connected to MQTT broker");
     } else {

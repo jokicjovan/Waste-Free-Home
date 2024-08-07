@@ -33,6 +33,7 @@ class Device(DeviceBase):
     owner_id: Optional[UUID]
     type: DeviceType
     is_online: bool
+    linked_timestamp: datetime.datetime | None = None
 
     class Config:
         from_attributes = True

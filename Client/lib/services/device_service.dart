@@ -16,7 +16,7 @@ class DeviceService {
   DeviceService() {
     address = dotenv.env['server_hostname']!;
     port = dotenv.env['server_port']!;
-    endpoint = dotenv.env['server_devices_endpoint']!;
+    endpoint = dotenv.env['server_devices_endpoint'] ?? '/API/devices';
     baseUrl = "http://$address:$port$endpoint";
     _dio = DioClient(baseUrl).dio;
   }

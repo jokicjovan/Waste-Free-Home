@@ -14,7 +14,7 @@ class RecordService {
   RecordService() {
     address = dotenv.env['server_hostname']!;
     port = dotenv.env['server_port']!;
-    endpoint = dotenv.env['server_records_endpoint']!;
+    endpoint = dotenv.env['server_records_endpoint'] ?? '/API/records';
     baseUrl = "http://$address:$port$endpoint";
     _dio = DioClient(baseUrl).dio;
   }
@@ -43,8 +43,8 @@ class RecordService {
       final levelRecords = (data['waste_sorter_level_record'] as List?)
           ?.map((record) => WasteSorterLevelRecord.fromJson(record))
           .toList();
-      final temperatureRecords = (data['thermo_humid_meter_record'] as List?)
-          ?.map((record) => ThermoHumidMeterTemperatureRecord.fromJson(record))
+      final thermohumidRecords = (data['thermo_humid_meter_record'] as List?)
+          ?.map((record) => ThermoHumidMeterRecord.fromJson(record))
           .toList();
 
       if (recycleRecords != null && levelRecords != null) {
@@ -52,9 +52,9 @@ class RecordService {
           'recycleRecords': recycleRecords,
           'levelRecords': levelRecords,
         };
-      } else if (temperatureRecords != null) {
+      } else if (thermohumidRecords != null) {
         return {
-          'temperatureRecords': temperatureRecords,
+          'thermohumidRecords': thermohumidRecords,
         };
       } else {
         throw Exception('No valid records found');

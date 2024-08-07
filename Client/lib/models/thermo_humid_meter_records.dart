@@ -1,17 +1,20 @@
 import 'package:waste_free_home/models/record.dart';
 
-class ThermoHumidMeterTemperatureRecord extends Record{
+class ThermoHumidMeterRecord extends Record{
   final double temperature;
+  final double humidity;
 
-  ThermoHumidMeterTemperatureRecord({
+  ThermoHumidMeterRecord({
     required super.timestamp,
     required this.temperature,
+    required this.humidity,
   });
 
-  factory ThermoHumidMeterTemperatureRecord.fromJson(Map<String, dynamic> json) {
-    return ThermoHumidMeterTemperatureRecord(
+  factory ThermoHumidMeterRecord.fromJson(Map<String, dynamic> json) {
+    return ThermoHumidMeterRecord(
       timestamp: DateTime.parse(json['timestamp']),
       temperature: json['temperature'],
+      humidity: json['humidity'],
     );
   }
 
@@ -20,6 +23,7 @@ class ThermoHumidMeterTemperatureRecord extends Record{
     return {
       ...super.toJson(),
       'temperature': temperature,
+      'humidity': humidity,
     };
   }
 }

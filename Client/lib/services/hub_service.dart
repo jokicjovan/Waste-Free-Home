@@ -3,8 +3,6 @@ import 'package:dio/dio.dart';
 import 'package:waste_free_home/utils/dio.dart';
 
 class HubService {
-  late String address;
-  late String port;
   late String baseUrl;
   late Dio _dio;
 
@@ -14,7 +12,7 @@ class HubService {
     discoverServices();
   }
 
-  Future<void> setupDioClient() async {
+  Future<void> setupDioClient(address, port) async {
     baseUrl = "http://$address:$port/API";
     _dio = DioClient(baseUrl).dio;
     _isDioInitialized = true;
@@ -38,9 +36,9 @@ class HubService {
           print('Service resolved: ${event.service?.toJson()}');
           Map<String, dynamic>? serviceInfo = event.service?.toJson();
           if (serviceInfo?["service.name"] == "WasteFreeHomeHTTPHub") {
-            address = serviceInfo?["service.host"];
-            port = serviceInfo!["service.port"].toString();
-            await setupDioClient();
+            String address = serviceInfo?["service.host"];
+            String port = serviceInfo!["service.port"].toString();
+            await setupDioClient(address, port);
             await discovery.stop();
           }
         } else if (event.type == BonsoirDiscoveryEventType.discoveryServiceLost) {

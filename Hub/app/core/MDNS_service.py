@@ -17,14 +17,14 @@ class MDNSService:
             type_="_http._tcp.local.",
             name="WasteFreeHomeHTTPHub._http._tcp.local.",
             addresses=[socket.inet_aton(settings.hub_hostname)],
-            port=settings.hub_port,
+            port=settings.http_port,
             properties=desc,
             server="waste-free-home-http-hub.local."
         )
         self.mqtt_broker_service_info = zeroconf.ServiceInfo(
             type_="_mqtt._tcp.local.",
             name="WasteFreeHomeMQTTBroker._mqtt._tcp.local.",
-            addresses=[socket.inet_aton(settings.mqtt_broker_hostname)],
+            addresses=[socket.inet_aton(settings.hub_hostname)],
             port=settings.mqtt_broker_port,
             properties=desc,
             server="waste-free-home-mqtt-broker.local."

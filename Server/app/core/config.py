@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     secret_key: str = secrets.token_urlsafe(32)
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
+    devices_thumbnails_path: str = "static/devices/thumbnails/"
 
     postgres_user: str
     postgres_password: str
@@ -19,8 +20,6 @@ class Settings(BaseSettings):
     timescale_hostname: str
     timescale_port: str
     timescale_name: str
-
-    devices_thumbnails_path: str
 
     class Config:
         env_file = ".env"

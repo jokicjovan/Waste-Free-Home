@@ -136,47 +136,41 @@
 
 ### Local Hub Server
 - **.env File**: Configure the following settings in the `.env` file for the Local Hub Server. The `.env` file should be located in the root directory of the Hub project:
-  - **Hub Information**:
+  - **Hub**:
     ```env
-    hub_id=hub_id
+    hub_id=hub_uuid
     hub_hostname=hub_hostname
-    hub_port=hub_port
+    ```
+  - **Its HTTP server information**
+    ```env
+    http_port=http_port
     ```
   - **MQTT Broker Configuration**:
     ```env
-    mqtt_broker_hostname=mqtt_broker_hostname
     mqtt_broker_port=mqtt_broker_port
-    mqtt_username=hub
-    mqtt_password=hub
+    mqtt_username=mqtt_username
+    mqtt_password=mqtt_password
     ```
-  - **MQTT Topics**:
-    ```env
-    device_record_topic=device/+/record
-    device_state_topic=device/+/state
-    ```
-  - **Remote Server Endpoints**:
+  - **Remote Server information**:
     ```env
     server_hostname=server_hostname
     server_port=server_port
-    server_devices_endpoint=API/devices
-    server_records_endpoint=API/records
-    server_auth_endpoint=API/auth/token
-    ```
-  - **User Credentials**:
-    ```env
     user_email=user_email
     user_password=user_password
+    ```
+  - **Optional**:
+    ```env
+    device_record_topic=device/+/record
+    device_state_topic=device/+/state
+    server_devices_endpoint=API/devices
+    server_records_endpoint=API/records
+    server_auth_endpoint=API/auth
+    jwt=jwt
     ```
 
 
 ### Remote Server
 - **.env File**: Configure the following settings in the `.env` file for the Remote Server. The `.env` file should be located in the root directory of the Server project:
-  - **Security**:
-    ```env
-    secret_key=secret_key
-    algorithm=HS256
-    access_token_expire_minutes=1440
-    ```
   - **PostgreSQL Configuration**:
     ```env
     postgres_user=postgres_user
@@ -193,28 +187,36 @@
     timescale_port=timescale_port
     timescale_name=timescale_name
     ```
-  - **File Paths**:
+  - **Optional**:
     ```env
+    secret_key=secret_key
+    algorithm=HS256
+    access_token_expire_minutes=1440
     devices_thumbnails_path=static/devices/thumbnails/
     ```
 
 
 ### Flutter App
 - **.env File**: Configure the following settings in the `.env` file for the Flutter application, located in the `assets` folder at the Client project root:
-  ```env
-  server_hostname=server_hostname
-  server_port=server_port
-  server_auth_endpoint=/API/auth
-  server_devices_endpoint=/API/devices
-  server_records_endpoint=/API/records
-  ```
-
+  - **Mandatory:**
+    ```env
+    server_hostname=server_hostname
+    server_port=server_port
+    ```
+  - **Optional**
+    ```env
+    server_auth_endpoint=/API/auth
+    server_devices_endpoint=/API/devices
+    server_records_endpoint=/API/records
+    ```
 
 ### Mosquitto Configuration
+
 #### `passwd` File
 - **Location**: Typically located at `/etc/mosquitto/passwd`.
 - **Purpose**: Stores user credentials for Mosquitto.
 - **Format**: Contains hashed passwords for MQTT users, created using the `mosquitto_passwd` command.
+- **Note**: Ensure the `passwd` file is properly secured and accessible only by the Mosquitto service.
 
 #### `mosquitto.conf` File
 - **Location**: Typically found at `/etc/mosquitto/mosquitto.conf`.
@@ -226,22 +228,12 @@
   - **Authentication and Authorization**: Define the path to the password file for user authentication.
     ```conf
     password_file /etc/mosquitto/passwd
+    allow_anonymous false
     ```
-  - **Logging**: Configure log options to track broker activities.
+  - **Protocol**: Set the MQTT protocol.
     ```conf
-    log_type all
-    log_dest file /var/log/mosquitto/mosquitto.log
+    protocol mqtt
     ```
-  - **Persistence**: Enable message persistence to retain messages across restarts.
-    ```conf
-    persistence true
-    persistence_location /var/lib/mosquitto/
-    ```
-
-- **Additional Notes**:
-  - Ensure the `passwd` file is properly secured and accessible only by the Mosquitto service.
-  - Adjust logging and persistence settings based on your use case and storage capacity.
-
 
 ### Arduino Configurations 
 - **Note**: The `config.h` files should be located in the same directory as their respective `.ino` files for proper configuration.
@@ -251,39 +243,11 @@
   #define CONFIG_H
 
   // Device
-  #define DEVICE_ID "device_uuid"
-  #define BIN_SIZE 30
-  #define WASTE_TYPE_RECYCLABLE "RECYCLABLE"
-  #define WASTE_TYPE_NON_RECYCLABLE "NON_RECYCLABLE"
-
+  const char* device_id = "device_uuid"
+  
   // MQTT
-  #define MQTT_BROKER_SERVICE_NAME "waste-free-home-mqtt-broker"
-  #define MQTT_DEVICE_TOPIC_PREFIX "device/"
-  #define MQTT_RECORD_TOPIC_SUFIX "/record"
-  #define MQTT_STATE_TOPIC_SUFIX "/state"
-  #define MQTT_STATE_OFFLINE_MESSAGE "{\"state\":\"offline\"}"
-  #define MQTT_STATE_ONLINE_MESSAGE "{\"state\":\"online\"}"
-  #define MQTT_USERNAME "device"
-  #define MQTT_PASSWORD "device"
-  #define MQTT_LWT_RETAIN true
-  #define MQTT_LWT_QOS 1
-
-  // Display
-  #define SCREEN_WIDTH 128
-  #define SCREEN_HEIGHT 64
-  #define OLED_RESET -1
-
-  // Pins
-  #define RECYCABLE_SERVO_PIN 12
-  #define NON_RECYCABLE_SERVO_PIN 13
-  #define RECYCABLE_DISTANCE_TRIG_PIN 16
-  #define RECYCABLE_DISTANCE_ECHO_PIN 17
-  #define NON_RECYCABLE_DISTANCE_TRIG_PIN 14
-  #define NON_RECYCABLE_DISTANCE_ECHO_PIN 27
-
-  // Addresses
-  #define PN532_I2C_ADDRESS 0x48
-  #define SSD1306_I2C_ADDRESS 0x3C
+  const char* mqtt_username = "mqtt_username";
+  const char* mqtt_password = "mqtt_password";
 
   // Network
   const char* ssid = "ssid";
@@ -298,23 +262,11 @@
     #define CONFIG_H
 
     // Device
-    #define DEVICE_ID "device_uuid"
-
+    const char* device_id = "device_uuid";
+    
     // MQTT
-    #define MQTT_BROKER_SERVICE_NAME "waste-free-home-mqtt-broker"
-    #define MQTT_DEVICE_TOPIC_PREFIX "device/"
-    #define MQTT_RECORD_TOPIC_SUFIX "/record"
-    #define MQTT_STATE_TOPIC_SUFIX "/state"
-    #define MQTT_STATE_OFFLINE_MESSAGE "{\"state\":\"offline\"}"
-    #define MQTT_STATE_ONLINE_MESSAGE "{\"state\":\"online\"}"
-    #define MQTT_USERNAME "device"
-    #define MQTT_PASSWORD "device"
-    #define MQTT_LWT_RETAIN true
-    #define MQTT_LWT_QOS 1
-
-    // Pins and types
-    #define DHT_SENSOR_PIN 13
-    #define DHT_SENSOR_TYPE DHT22
+    const char* mqtt_username = "mqtt_username";
+    const char* mqtt_password = "mqtt_password";
 
     // Network
     const char* ssid = "ssid";

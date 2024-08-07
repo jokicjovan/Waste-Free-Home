@@ -13,7 +13,7 @@ class AuthService {
   AuthService() {
     address = dotenv.env['server_hostname']!;
     port = dotenv.env['server_port']!;
-    endpoint = dotenv.env['server_auth_endpoint']!;
+    endpoint = dotenv.env['server_auth_endpoint'] ?? "/API/auth";
     baseUrl = "http://$address:$port$endpoint";
     _dio = DioClient(baseUrl).dio;
   }

@@ -1,5 +1,7 @@
 from typing import Optional
 from uuid import UUID
+
+from sqlalchemy import asc
 from sqlalchemy.orm import Session
 
 from app.core.utils import camelcase_to_snakecase
@@ -63,6 +65,7 @@ def get_device_records(
             query = query.filter(record_model.timestamp >= start_date)
         if end_date:
             query = query.filter(record_model.timestamp <= end_date)
+        query = query.order_by(asc(record_model.timestamp))
         records[camelcase_to_snakecase(record_model.__name__)] = query.offset(skip).limit(limit).all()
 
     return records

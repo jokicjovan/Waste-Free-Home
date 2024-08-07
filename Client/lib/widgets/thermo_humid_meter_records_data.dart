@@ -3,7 +3,7 @@ import 'package:waste_free_home/models/thermo_humid_meter_records.dart';
 import 'package:waste_free_home/services/auth_service.dart';
 import 'package:waste_free_home/services/record_service.dart';
 import 'package:waste_free_home/utils/helper_methods.dart';
-import 'package:waste_free_home/widgets/thermo_humid_meter_temperature_chart.dart';
+import 'package:waste_free_home/widgets/thermo_humid_meter_chart.dart';
 import 'package:waste_free_home/models/record.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -23,6 +23,7 @@ class ThermoHumidMeterRecordsDataState extends State<ThermoHumidMeterRecordsData
   late Future<Map<String, List<Record>>> _recordsFuture;
   late Future<Map<String, List<Record>>> _latestRecordsFuture;
   double? _lastTemperature;
+  double? _lastHumidity;
   DateTime _startDate = DateTime.now().subtract(const Duration(days: 30));
   DateTime _endDate = DateTime.now().add(const Duration(days: 1));
   late final WebSocketChannel _channel;
@@ -92,9 +93,9 @@ class ThermoHumidMeterRecordsDataState extends State<ThermoHumidMeterRecordsData
       endDate: endDate,
     );
 
-    final temperatureRecords = data['temperatureRecords'] as List<ThermoHumidMeterTemperatureRecord>;
+    final thermohumidRecords = data['thermohumidRecords'] as List<ThermoHumidMeterRecord>;
 
-    return {'temperatureRecords': temperatureRecords};
+    return {'thermohumidRecords': thermohumidRecords};
   }
 
   Future<Map<String, List<Record>>> _fetchLatestRecords() async {
@@ -106,15 +107,15 @@ class ThermoHumidMeterRecordsDataState extends State<ThermoHumidMeterRecordsData
       endDate: now,
     );
 
-    final temperatureRecords = data['temperatureRecords'] as List<ThermoHumidMeterTemperatureRecord>;
+    final thermohumidRecords = data['thermohumidRecords'] as List<ThermoHumidMeterRecord>;
 
-    if (temperatureRecords.isNotEmpty) {
+    if (thermohumidRecords.isNotEmpty) {
       setState(() {
-        _lastTemperature = temperatureRecords.last.temperature;
+        _lastTemperature = thermohumidRecords.last.temperature;
+        _lastHumidity = thermohumidRecords.last.humidity;
       });
     }
-
-    return {'temperatureRecords': temperatureRecords};
+    return {'thermohumidRecords': thermohumidRecords};
   }
 
   @override
@@ -158,49 +159,95 @@ class ThermoHumidMeterRecordsDataState extends State<ThermoHumidMeterRecordsData
                           style: const TextStyle(color: Colors.red)),
                     );
                   } else if (!snapshot.hasData ||
-                      snapshot.data!['temperatureRecords']!.isEmpty) {
+                      snapshot.data!['thermohumidRecords']!.isEmpty) {
                     return const Center(
                       child: Text('No data available for the last 24 hours',
                           style: TextStyle(color: Colors.grey)),
                     );
                   } else {
-                    final temperatureRecords = snapshot.data!['temperatureRecords']
-                    as List<ThermoHumidMeterTemperatureRecord>;
-                    return Card(
-                      elevation: 6,
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              _lastTemperature != null
-                                  ? '${_lastTemperature!.toStringAsFixed(1)}°C'
-                                  : 'N/A',
-                              style: TextStyle(
-                                color: _lastTemperature != null
-                                    ? (_lastTemperature! < 15
-                                    ? Colors.lightBlue
-                                    : _lastTemperature! > 28
-                                    ? Colors.orange
-                                    : Colors.black)
-                                    : Colors.black,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
+                    final thermohumidRecords = snapshot.data!['thermohumidRecords']
+                    as List<ThermoHumidMeterRecord>;
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Card(
+                            elevation: 6,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    _lastTemperature != null
+                                        ? '${_lastTemperature!.toStringAsFixed(1)}°C'
+                                        : 'N/A',
+                                    style: TextStyle(
+                                      color: _lastTemperature != null
+                                          ? (_lastTemperature! < 15
+                                          ? Colors.lightBlue
+                                          : _lastTemperature! > 28
+                                          ? Colors.deepOrange
+                                          : Colors.green)
+                                          : Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const Text(
+                                    textAlign: TextAlign.center,
+                                    'Temperature',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            const Text(
-                              textAlign: TextAlign.center,
-                              'Temperature',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
+                        Expanded(
+                          child: Card(
+                            elevation: 6,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    _lastHumidity != null
+                                        ? '${_lastHumidity!.toStringAsFixed(1)}%'
+                                        : 'N/A',
+                                    style: TextStyle(
+                                      color: _lastHumidity != null
+                                          ? (_lastHumidity! < 30
+                                          ? Colors.orange
+                                          : _lastHumidity! > 50
+                                          ? Colors.blue
+                                          : Colors.green)
+                                          : Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const Text(
+                                    textAlign: TextAlign.center,
+                                    'Humidity',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     );
                   }
                 },
@@ -269,18 +316,18 @@ class ThermoHumidMeterRecordsDataState extends State<ThermoHumidMeterRecordsData
                     );
                   } else if (!recordsSnapshot.hasData ||
                       recordsSnapshot.data == null ||
-                      recordsSnapshot.data!['temperatureRecords']!.isEmpty) {
+                      recordsSnapshot.data!['thermohumidRecords']!.isEmpty) {
                     return const Center(
                       child: Text('No records found',
                           style: TextStyle(color: Colors.grey)),
                     );
                   } else {
-                    final temperatureRecords = recordsSnapshot.data!['temperatureRecords']
-                    as List<ThermoHumidMeterTemperatureRecord>;
+                    final thermohumidRecords = recordsSnapshot.data!['thermohumidRecords']
+                    as List<ThermoHumidMeterRecord>;
                     return Padding(
                       padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                       child:
-                      ThermoHumidMeterTemperatureChart(data: temperatureRecords),
+                      ThermoHumidMeterChart(data: thermohumidRecords),
                     );
                   }
                 },

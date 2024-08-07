@@ -16,7 +16,7 @@ async def lifespan(app: FastAPI):
     mqtt_client.username_pw_set(settings.mqtt_username, settings.mqtt_password)
     mqtt_client.on_connect = on_connect
     mqtt_client.on_message = on_message
-    mqtt_client.connect(host=settings.mqtt_broker_hostname, port=settings.mqtt_broker_port, keepalive=60)
+    mqtt_client.connect(host=settings.hub_hostname, port=settings.mqtt_broker_port, keepalive=60)
     mqtt_client.loop_start()
 
     # Initialize mDNS service

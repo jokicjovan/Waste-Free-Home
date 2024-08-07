@@ -11,6 +11,35 @@
 #include <ESPmDNS.h>
 #include "config.h"
 
+// Macros
+// MQTT
+#define MQTT_BROKER_SERVICE_NAME "waste-free-home-mqtt-broker"
+#define MQTT_DEVICE_TOPIC_PREFIX "device/"
+#define MQTT_RECORD_TOPIC_SUFIX "/record"
+#define MQTT_STATE_TOPIC_SUFIX "/state"
+#define MQTT_STATE_OFFLINE_MESSAGE "{\"state\":\"offline\"}"
+#define MQTT_STATE_ONLINE_MESSAGE "{\"state\":\"online\"}"
+#define MQTT_LWT_RETAIN true
+#define MQTT_LWT_QOS 1
+// Display
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET -1
+// Pins
+#define RECYCABLE_SERVO_PIN 12
+#define NON_RECYCABLE_SERVO_PIN 13
+#define RECYCABLE_DISTANCE_TRIG_PIN 16
+#define RECYCABLE_DISTANCE_ECHO_PIN 17
+#define NON_RECYCABLE_DISTANCE_TRIG_PIN 14
+#define NON_RECYCABLE_DISTANCE_ECHO_PIN 27
+// Addresses
+#define PN532_I2C_ADDRESS 0x48
+#define SSD1306_I2C_ADDRESS 0x3C
+// Other
+#define BIN_SIZE 30
+#define WASTE_TYPE_RECYCLABLE "RECYCLABLE"
+#define WASTE_TYPE_NON_RECYCLABLE "NON_RECYCLABLE"
+
 // Variables
 PN532_I2C pn532_i2c(Wire);
 NfcAdapter nfc(pn532_i2c);
@@ -25,8 +54,9 @@ String mqttBrokerIp = "";
 int mqttBrokerPort = -1;
 
 // Function prototypes
-void readNfcTag();
+void discoverMDNSService();
 void reconnectMQTT();
+void readNfcTag();
 String extractWasteType(const String& payload);
 void handleThrownWaste(const String& wasteType);
 void openLidForWasteType(const String& wasteType);
@@ -131,9 +161,9 @@ void discoverMDNSService() {
 void reconnectMQTT() {
   if (!client.connected()) {
     // Define topic for LWT
-    String lwt_topic = String(MQTT_DEVICE_TOPIC_PREFIX) + String(DEVICE_ID) + String(MQTT_STATE_TOPIC_SUFIX);
+    String lwt_topic = String(MQTT_DEVICE_TOPIC_PREFIX) + String(device_id) + String(MQTT_STATE_TOPIC_SUFIX);
 
-    if (client.connect(DEVICE_ID, MQTT_USERNAME, MQTT_PASSWORD, lwt_topic.c_str(), MQTT_LWT_QOS, MQTT_LWT_RETAIN, MQTT_STATE_OFFLINE_MESSAGE)) {
+    if (client.connect(device_id, mqtt_username, mqtt_password, lwt_topic.c_str(), MQTT_LWT_QOS, MQTT_LWT_RETAIN, MQTT_STATE_OFFLINE_MESSAGE)) {
       client.publish(lwt_topic.c_str(), MQTT_STATE_ONLINE_MESSAGE);
       Serial.println("Connected to MQTT broker");
     } else {
@@ -215,7 +245,7 @@ void handleThrownWaste(const String& wasteType) {
   updateDisplay(recyclableFillage, nonRecyclableFillage);
 
   // Define topic for messages
-  String device_topic = String(MQTT_DEVICE_TOPIC_PREFIX) + DEVICE_ID + String(MQTT_RECORD_TOPIC_SUFIX);
+  String device_topic = String(MQTT_DEVICE_TOPIC_PREFIX) + String(device_id) + String(MQTT_RECORD_TOPIC_SUFIX);
   
   // Publish waste type message
   String waste_type_message = "{\"waste_type\":\"" + wasteType + "\"}";
