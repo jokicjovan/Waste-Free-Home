@@ -1,0 +1,88 @@
+services:
+  database:
+    image: postgres:latest
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: WasteFreeHome
+    networks:
+      - server_network
+    ports:
+      - "5432:5432"
+    volumes:
+      - PostgresData:/var/lib/postgresql/database
+  
+  time_series_database:
+    image: timescale/timescaledb:latest-pg16
+    container_name: timescale_time_series_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: WasteFreeHomeTimeSeries
+    networks:
+      - server_network
+    depends_on:
+      - database
+    ports:
+      - "5433:5432"
+    volumes:
+      - TimescaleData:/var/lib/postgresql/data
+    tty: true
+
+    
+  # server:
+  #   build:
+  #     context: ./Server
+  #     dockerfile: Dockerfile
+  #   container_name: fastapi_server
+  #   networks:
+  #     - server_network
+  #   ports:
+  #     - "9000:8000"
+  #   volumes:
+  #     - ./Server/app:/Server/app
+  #     - ./Server/requirements.txt:/Server/requirements.txt
+  #     - ./Server/.env:/Server/.env
+  #   depends_on:
+  #     - database
+  #     - time_series_database
+
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: mosquitto_mqtt_broker
+    networks:
+      - home_network
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./MqttBroker/config:/mosquitto/config
+      - ./MqttBroker/data:/mosquitto/data
+      - ./MqttBroker/log:/mosquitto/log
+
+  # hub:
+  #   build:
+  #     context: ./Hub
+  #     dockerfile: Dockerfile
+  #   container_name: fastapi_hub
+  #   networks:
+  #     - home_network
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - ./Hub/app:/Hub/app
+  #     - ./Hub/requirements.txt:/Hub/requirements.txt
+  #     - ./Hub/.env:/Hub/.env
+  #   depends_on:
+  #     - mosquitto
+  #     - server
+
+volumes:
+  PostgresData:
+  TimescaleData:
+
+networks:
+  home_network:
+  server_network:

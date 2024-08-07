@@ -1,0 +1,20 @@
+#
+FROM python:3.11
+
+#
+WORKDIR /Hub
+
+#
+COPY ./requirements.txt /Hub/requirements.txt
+
+#
+RUN pip install --no-cache-dir --upgrade -r /Hub/requirements.txt
+
+#
+COPY ./app /Hub/app
+
+#
+COPY ./.env /Hub/.env
+
+#
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
