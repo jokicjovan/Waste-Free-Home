@@ -21,13 +21,15 @@
 - **mDNS Service Broadcasting**: The local hub broadcasts its presence and service information using mDNS. This allows the Flutter app and Arduino projects to discover and connect to it.
 
 ### 2. Remote Server
-- **FastAPI Server**: Handles data storage and remote access.
-  - **Data Storage**: Receives and stores data collected from the local hubs.
+- **FastAPI HTTP Server**: Handles data storage and remote access.
+  - **Data Storage**: Receives and stores data collected from the local hubs in database.
   - **WebSocket Management**: Handles WebSocket connections for real-time updates and communications.
   - **JWT Authentication**: Secures API endpoints with JWT tokens.
   - **API Endpoints**: Provides endpoints for retrieving and managing stored data.
   - **User and Device Manipulation**: Manages user accounts and device configurations.
   - **File Handling**: Serves device thumbnail images through `FileResponse`.
+- **PostgreSQL Database**: Stores data about users and devices
+- **Timescale Database**: Stores time-series data of devices
 
 ### 3. Flutter App
 - **WasteFreeHome App**: A mobile application to interact with and control the IoT system.

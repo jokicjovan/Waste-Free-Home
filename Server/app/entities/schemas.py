@@ -30,10 +30,10 @@ class DeviceUpdate(DeviceBase):
 
 class Device(DeviceBase):
     id: UUID
-    owner_id: Optional[UUID]
+    owner_id: Optional[UUID] = None
     type: DeviceType
     is_online: bool
-    linked_timestamp: datetime.datetime | None = None
+    linked_timestamp: Optional[datetime.datetime] = None
 
     class Config:
         from_attributes = True
