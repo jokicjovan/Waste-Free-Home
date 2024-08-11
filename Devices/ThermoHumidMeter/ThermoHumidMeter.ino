@@ -2,6 +2,8 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <ESP8266mDNS.h>
+#include <ESP8266WebServer.h>
+#include <EEPROM.h>
 #include "config.h"
 
 // Macros
@@ -17,75 +19,137 @@
 // Sensors
 #define DHT_SENSOR_PIN 13
 #define DHT_SENSOR_TYPE DHT22
+// EEPROM
+#define EEPROM_SSID_ADDR 0
+#define EEPROM_PASSWORD_ADDR 32
+#define EEPROM_MQTT_IP_ADDR 64
+#define EEPROM_MQTT_PORT_ADDR 96
 
 // Variables
 DHT dht_sensor(DHT_SENSOR_PIN, DHT_SENSOR_TYPE);
 WiFiClient espClient;
 PubSubClient client(espClient);
-String mqttBrokerIp = "";
-int mqttBrokerPort = -1;
+ESP8266WebServer server(80);
+bool apMode = false;
 
 // Function prototypes
+void checkAndReconnectMQTT();
 void discoverMDNSService();
-void reconnectMQTT();
+void startAccessPoint();
+void stopAccessPoint();
+void handleNetworkCredentialsUpdate();
+void checkAndReconnectWiFi();
 
 void setup() {
   Serial.begin(9600);
-
-  // Initialize sensor
   dht_sensor.begin();
-  
-  // Connect to WiFi
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("Connected to WiFi");
+  EEPROM.begin(512);
 
-  // Initialize mDNS
-  if (!MDNS.begin("ThermoHumidMeter")) {
-    Serial.println("Error starting mDNS");
-    return;
+  // Start Access Point if needed
+  checkAndReconnectWiFi();
+
+  if (WiFi.status() == WL_CONNECTED) {
+    if (!MDNS.begin("ThermoHumidMeter")) {
+      Serial.println("Error starting mDNS");
+    }
+  } else {
+    // Handle the case where WiFi connection failed or is not available
+    Serial.println("WiFi not connected. mDNS cannot be initialized. Starting Access Point...");
+    startAccessPoint();
   }
+
 }
 
 void loop() {
-  // Discover mDNS service if mqttBrokerIp or mqttBrokerPort are empty
-  if (mqttBrokerIp.isEmpty() || mqttBrokerPort == -1) {
-    discoverMDNSService();
-  }
-
-  // Connect to MQTT broker if mqttBrokerIp and mqttBrokerPort are found and client not connected
-  if (!mqttBrokerIp.isEmpty() && mqttBrokerPort != -1 && !client.connected()) {
-    reconnectMQTT();
-  }
-
-  // MQTT loop
-  client.loop();
-
-  // Read from sensor
-  float temperature = dht_sensor.readTemperature();
-  float humidity = dht_sensor.readHumidity();
-
-  // Check whether the reading is successful or not
-  if (isnan(temperature) || isnan(humidity)) {
-    Serial.println("Failed to read from DHT sensor!");
+  if (apMode) {
+    server.handleClient(); // Handle HTTP requests in AP mode
   } else {
-    // Define topic for messages
-    String device_topic = String(MQTT_DEVICE_TOPIC_PREFIX) + String(device_id) + String(MQTT_RECORD_TOPIC_SUFIX);
-    
-    // Publish temperature and humidity message
-    String thermo_humid_message = "{\"temperature\":\"" + String(temperature) + "\", \"humidity\":\"" + String(humidity) + "\"}";
-    client.publish(device_topic.c_str(), thermo_humid_message.c_str());
+    checkAndReconnectWiFi(); // Check and reconnect to WiFi if necessary
+    checkAndReconnectMQTT(); // Check and reconnect to MQTT if necessary
 
-    // Print for debug
-    Serial.print("Thermo Humid Meter message: ");
-    Serial.println(thermo_humid_message.c_str());
+    // MQTT loop
+    client.loop();
+
+    // Read from sensor and publish data
+    float temperature = dht_sensor.readTemperature();
+    float humidity = dht_sensor.readHumidity();
+
+    if (isnan(temperature) || isnan(humidity)) {
+      Serial.println("Failed to read from DHT sensor!");
+    } else {
+      String device_topic = String(MQTT_DEVICE_TOPIC_PREFIX) + String(device_id) + String(MQTT_RECORD_TOPIC_SUFIX);
+      String thermo_humid_message = "{\"temperature\":\"" + String(temperature) + "\", \"humidity\":\"" + String(humidity) + "\"}";
+      client.publish(device_topic.c_str(), thermo_humid_message.c_str());
+      Serial.print("Thermo Humid Meter message: ");
+      Serial.println(thermo_humid_message.c_str());
+    }
+
+    delay(10000); // Wait 10 seconds between readings
   }
+}
 
-  // Wait a 60 seconds between readings
-  delay(60000);
+void checkAndReconnectWiFi() {
+  if (WiFi.status() != WL_CONNECTED) {
+    String ssid = readStringFromEEPROM(EEPROM_SSID_ADDR);
+    String password = readStringFromEEPROM(EEPROM_PASSWORD_ADDR);
+
+    if (ssid.length() > 0 && password.length() > 0) {
+      WiFi.begin(ssid.c_str(), password.c_str());
+
+      int attempts = 0;
+      while (WiFi.status() != WL_CONNECTED && attempts < 10) {
+        delay(1000);
+        Serial.print(".");
+        attempts++;
+      }
+
+      if (WiFi.status() == WL_CONNECTED) {
+        Serial.println("Connected to WiFi");
+        return;
+      } else {
+        Serial.println("Failed to connect to WiFi after 10 attempts.");
+      }
+    } else {
+      Serial.println("No WiFi credentials found.");
+    }
+  }
+}
+
+void checkAndReconnectMQTT() {
+  if (WiFi.status() == WL_CONNECTED) {
+    if (!client.connected()) {
+      // Read MQTT broker details from EEPROM
+      String mqttBrokerIp = readStringFromEEPROM(EEPROM_MQTT_IP_ADDR);
+      int mqttBrokerPort = readIntFromEEPROM(EEPROM_MQTT_PORT_ADDR);
+
+      if (mqttBrokerIp.length() > 0 && mqttBrokerPort > 0) {
+        client.setServer(mqttBrokerIp.c_str(), mqttBrokerPort);
+        String lwt_topic = String(MQTT_DEVICE_TOPIC_PREFIX) + String(device_id) + String(MQTT_STATE_TOPIC_SUFIX);
+
+        int attempts = 0;
+        while (!client.connected() && attempts < 10) {
+          client.connect(device_id, mqtt_username, mqtt_password, lwt_topic.c_str(), MQTT_LWT_QOS, MQTT_LWT_RETAIN, MQTT_STATE_OFFLINE_MESSAGE);
+          delay(1000);
+          Serial.print(".");
+          attempts++;
+        }
+
+        if (client.connected()) {
+          Serial.println("Connected to MQTT broker");
+          client.publish(lwt_topic.c_str(), MQTT_STATE_ONLINE_MESSAGE);
+          return;
+        } else {
+          Serial.print("Failed to connect to MQTT after 10 attempts. rc=");
+          Serial.print(client.state());
+          Serial.println(". Discovering services...");
+          discoverMDNSService();
+        }
+      } else {
+        Serial.println("No MQTT broker details found. Discovering services...");
+        discoverMDNSService();
+      }
+    }
+  }
 }
 
 void discoverMDNSService() {
@@ -104,9 +168,7 @@ void discoverMDNSService() {
         newServiceName = newServiceName.substring(0, newServiceName.length() - 6);
       }
 
-      Serial.println(newServiceName);
-
-      if (newServiceName == MQTT_BROKER_SERVICE_NAME){
+      if (newServiceName == MQTT_BROKER_SERVICE_NAME) {
         Serial.print("Service Name: ");
         Serial.println(newServiceName);
         Serial.print("Service Type: ");
@@ -116,26 +178,81 @@ void discoverMDNSService() {
         Serial.print("Port: ");
         Serial.println(newMqttBrokerPort);
 
-        mqttBrokerIp = newMqttBrokerIp;
-        mqttBrokerPort = newMqttBrokerPort;
-        client.setServer(mqttBrokerIp.c_str(), newMqttBrokerPort);
+        writeStringToEEPROM(EEPROM_MQTT_IP_ADDR, newMqttBrokerIp);
+        writeIntToEEPROM(EEPROM_MQTT_PORT_ADDR, newMqttBrokerPort);
+        EEPROM.commit();
         break;
       }
     }
   }
 }
 
-void reconnectMQTT() {
-  if (!client.connected()) {
-    // Define topic for LWT
-    String lwt_topic = String(MQTT_DEVICE_TOPIC_PREFIX) + String(device_id) + String(MQTT_STATE_TOPIC_SUFIX);
-    
-    if (client.connect(device_id, mqtt_username, mqtt_password, lwt_topic.c_str(), MQTT_LWT_QOS, MQTT_LWT_RETAIN, MQTT_STATE_OFFLINE_MESSAGE)) {
-      client.publish(lwt_topic.c_str(), MQTT_STATE_ONLINE_MESSAGE);
-      Serial.println("Connected to MQTT broker");
-    } else {
-      Serial.print("Failed to connect, rc=");
-      Serial.print(client.state());
-    }
+void startAccessPoint() {
+  server.on("/API/health", HTTP_GET, handleHealthCheck);
+  server.on("/API/network-credentials", HTTP_POST, handleNetworkCredentialsUpdate);
+  server.begin();
+  WiFi.softAP("THERMO_HUMID_METER_AP");
+  Serial.println("Access Point Started. Connect to 'THERMO_HUMID_METER_AP' and access http://192.168.4.1/API/network-credentials to set WiFi credentials.");
+  apMode = true;
+}
+
+void stopAccessPoint() {
+  if (WiFi.softAPgetStationNum() > 0) {
+    WiFi.softAPdisconnect(true);
+    Serial.println("Access Point stopped.");
+    apMode = false;
   }
+}
+
+void handleHealthCheck() {
+  server.send(200, "text/plain", "ok");
+}
+
+void handleNetworkCredentialsUpdate() {
+  if (server.hasArg("ssid") && server.hasArg("password")) {
+    String ssid = server.arg("ssid");
+    String password = server.arg("password");
+
+    if (ssid.length() > 0 && password.length() > 0) {
+      writeStringToEEPROM(EEPROM_SSID_ADDR, ssid);
+      writeStringToEEPROM(EEPROM_PASSWORD_ADDR, password);
+      EEPROM.commit();
+      server.send(200, "text/plain", "Credentials updated. Restarting...");
+      delay(1000); // Allow time for the response to be sent
+      
+      stopAccessPoint();
+      ESP.restart(); // Restart to apply new credentials
+    } else {
+      server.send(400, "text/plain", "Invalid parameters");
+    }
+  } else {
+    server.send(400, "text/plain", "Missing parameters");
+  }
+}
+
+void writeStringToEEPROM(int startAddress, String data) {
+  int length = data.length();
+  EEPROM.write(startAddress, length);
+  for (int i = 0; i < length; i++) {
+    EEPROM.write(startAddress + 1 + i, data[i]);
+  }
+}
+
+String readStringFromEEPROM(int startAddress) {
+  int length = EEPROM.read(startAddress);
+  String data = "";
+  for (int i = 0; i < length; i++) {
+    data += char(EEPROM.read(startAddress + 1 + i));
+  }
+  return data;
+}
+
+void writeIntToEEPROM(int address, int value) {
+  EEPROM.write(address, (value >> 8) & 0xFF);
+  EEPROM.write(address + 1, value & 0xFF);
+}
+
+int readIntFromEEPROM(int address) {
+  int value = (EEPROM.read(address) << 8) | EEPROM.read(address + 1);
+  return value;
 }
