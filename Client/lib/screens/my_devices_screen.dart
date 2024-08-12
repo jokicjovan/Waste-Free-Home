@@ -20,12 +20,20 @@ class MyDevicesScreenState extends State<MyDevicesScreen> {
   @override
   void initState() {
     super.initState();
-    _devicesFuture = _deviceService.getMyDevices();
+    _devicesFuture = _fetchDevices();
+  }
+
+  Future<List<Device>> _fetchDevices() async {
+    try {
+      return await _deviceService.getMyDevices();
+    } catch (e) {
+      throw Exception('Failed to fetch devices: $e');
+    }
   }
 
   Future<void> _refreshDevices() async {
     setState(() {
-      _devicesFuture = _deviceService.getMyDevices();
+      _devicesFuture = _fetchDevices();
     });
   }
 
@@ -81,7 +89,7 @@ class MyDevicesScreenState extends State<MyDevicesScreen> {
                     crossAxisCount: 2,
                     crossAxisSpacing: 8.0,
                     mainAxisSpacing: 8.0,
-                    childAspectRatio: 0.75,
+                    childAspectRatio: 0.7,
                   ),
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {

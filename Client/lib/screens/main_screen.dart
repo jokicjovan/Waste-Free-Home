@@ -35,7 +35,7 @@ class MainScreenState extends State<MainScreen> {
         final currentIndex = tabsRouter.activeIndex;
 
         return AppBar(
-          title: Text(currentIndex == 0 ? 'My devices' : 'Hub', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+          title: Text(currentIndex == 0 ? 'My devices' : currentIndex == 1 ? 'Hub' : 'Device AP', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
           actions: [
             IconButton(
               icon: const Icon(Icons.logout),
@@ -45,7 +45,7 @@ class MainScreenState extends State<MainScreen> {
           ],
         );
       },
-      routes: const [MyDevicesRoute(), HubRoute()],
+      routes: const [MyDevicesRoute(), HubRoute(), DeviceAPRoute()],
       bottomNavigationBuilder: (_, tabsRouter) {
         return BottomNavigationBar(
           currentIndex: tabsRouter.activeIndex,
@@ -55,6 +55,8 @@ class MainScreenState extends State<MainScreen> {
                 label: 'Devices', icon: Icon(Icons.device_thermostat)),
             BottomNavigationBarItem(
                 label: 'Hub', icon: Icon(Icons.device_hub)),
+            BottomNavigationBarItem(
+                label: 'Device AP', icon: Icon(Icons.wifi)),
           ],
         );
       },

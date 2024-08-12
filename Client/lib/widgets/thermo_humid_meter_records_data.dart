@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:waste_free_home/models/thermo_humid_meter_records.dart';
 import 'package:waste_free_home/services/auth_service.dart';
@@ -14,10 +16,12 @@ class ThermoHumidMeterRecordsData extends StatefulWidget {
   const ThermoHumidMeterRecordsData({super.key, required this.deviceId});
 
   @override
-  ThermoHumidMeterRecordsDataState createState() => ThermoHumidMeterRecordsDataState();
+  ThermoHumidMeterRecordsDataState createState() =>
+      ThermoHumidMeterRecordsDataState();
 }
 
-class ThermoHumidMeterRecordsDataState extends State<ThermoHumidMeterRecordsData> {
+class ThermoHumidMeterRecordsDataState
+    extends State<ThermoHumidMeterRecordsData> {
   final RecordService _recordService = RecordService();
   final AuthService _authService = AuthService();
   late Future<Map<String, List<Record>>> _recordsFuture;
@@ -51,14 +55,21 @@ class ThermoHumidMeterRecordsDataState extends State<ThermoHumidMeterRecordsData
       },
     );
     _channel.stream.listen((message) {
-      if (_endDate.isAfter(DateTime.now())) {
+      final correctedMessage = message.replaceAll("'", '"');
+      final Map<String, dynamic> data = jsonDecode(correctedMessage);
+      final double? temperature = data['temperature'] is double
+          ? data['temperature']
+          : double.tryParse(data['temperature'].toString());
+      final double? humidity = data['humidity'] is double
+          ? data['humidity']
+          : double.tryParse(data['humidity'].toString());
+
+      if (temperature != null && humidity != null) {
         setState(() {
-          _recordsFuture = _fetchRecords(startDate: _startDate, endDate: _endDate);
+          _lastTemperature = temperature;
+          _lastHumidity = humidity;
         });
       }
-      setState(() {
-        _latestRecordsFuture = _fetchLatestRecords();
-      });
     });
   }
 
@@ -75,10 +86,13 @@ class ThermoHumidMeterRecordsDataState extends State<ThermoHumidMeterRecordsData
 
     if (picked != null) {
       setState(() {
-        _startDate = DateTime(picked.start.year, picked.start.month, picked.start.day, 0, 0, 0);
-        _endDate = DateTime(picked.end.year, picked.end.month, picked.end.day, 23, 59, 59, 999);
+        _startDate = DateTime(
+            picked.start.year, picked.start.month, picked.start.day, 0, 0, 0);
+        _endDate = DateTime(
+            picked.end.year, picked.end.month, picked.end.day, 23, 59, 59, 999);
 
-        _recordsFuture = _fetchRecords(startDate: _startDate, endDate: _endDate);
+        _recordsFuture =
+            _fetchRecords(startDate: _startDate, endDate: _endDate);
       });
     }
   }
@@ -93,7 +107,8 @@ class ThermoHumidMeterRecordsDataState extends State<ThermoHumidMeterRecordsData
       endDate: endDate,
     );
 
-    final thermohumidRecords = data['thermohumidRecords'] as List<ThermoHumidMeterRecord>;
+    final thermohumidRecords =
+        data['thermohumidRecords'] as List<ThermoHumidMeterRecord>;
 
     return {'thermohumidRecords': thermohumidRecords};
   }
@@ -107,7 +122,8 @@ class ThermoHumidMeterRecordsDataState extends State<ThermoHumidMeterRecordsData
       endDate: now,
     );
 
-    final thermohumidRecords = data['thermohumidRecords'] as List<ThermoHumidMeterRecord>;
+    final thermohumidRecords =
+        data['thermohumidRecords'] as List<ThermoHumidMeterRecord>;
 
     if (thermohumidRecords.isNotEmpty) {
       setState(() {
@@ -165,8 +181,9 @@ class ThermoHumidMeterRecordsDataState extends State<ThermoHumidMeterRecordsData
                           style: TextStyle(color: Colors.grey)),
                     );
                   } else {
-                    final thermohumidRecords = snapshot.data!['thermohumidRecords']
-                    as List<ThermoHumidMeterRecord>;
+                    final thermohumidRecords =
+                        snapshot.data!['thermohumidRecords']
+                            as List<ThermoHumidMeterRecord>;
                     return Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -187,10 +204,10 @@ class ThermoHumidMeterRecordsDataState extends State<ThermoHumidMeterRecordsData
                                     style: TextStyle(
                                       color: _lastTemperature != null
                                           ? (_lastTemperature! < 15
-                                          ? Colors.lightBlue
-                                          : _lastTemperature! > 28
-                                          ? Colors.deepOrange
-                                          : Colors.green)
+                                              ? Colors.lightBlue
+                                              : _lastTemperature! > 28
+                                                  ? Colors.deepOrange
+                                                  : Colors.green)
                                           : Colors.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -225,10 +242,10 @@ class ThermoHumidMeterRecordsDataState extends State<ThermoHumidMeterRecordsData
                                     style: TextStyle(
                                       color: _lastHumidity != null
                                           ? (_lastHumidity! < 30
-                                          ? Colors.orange
-                                          : _lastHumidity! > 50
-                                          ? Colors.blue
-                                          : Colors.green)
+                                              ? Colors.orange
+                                              : _lastHumidity! > 50
+                                                  ? Colors.blue
+                                                  : Colors.green)
                                           : Colors.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -289,7 +306,7 @@ class ThermoHumidMeterRecordsDataState extends State<ThermoHumidMeterRecordsData
                       readOnly: true,
                       decoration: InputDecoration(
                         labelText:
-                        '${formatDate(_startDate.toLocal())} - ${formatDate(_endDate.toLocal())}',
+                            '${formatDate(_startDate.toLocal())} - ${formatDate(_endDate.toLocal())}',
                         suffixIcon: IconButton(
                           icon: const Icon(Icons.calendar_today,
                               color: Colors.green),
@@ -322,12 +339,12 @@ class ThermoHumidMeterRecordsDataState extends State<ThermoHumidMeterRecordsData
                           style: TextStyle(color: Colors.grey)),
                     );
                   } else {
-                    final thermohumidRecords = recordsSnapshot.data!['thermohumidRecords']
-                    as List<ThermoHumidMeterRecord>;
+                    final thermohumidRecords =
+                        recordsSnapshot.data!['thermohumidRecords']
+                            as List<ThermoHumidMeterRecord>;
                     return Padding(
                       padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                      child:
-                      ThermoHumidMeterChart(data: thermohumidRecords),
+                      child: ThermoHumidMeterChart(data: thermohumidRecords),
                     );
                   }
                 },

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:waste_free_home/models/waste_sorter_records.dart';
 import 'package:waste_free_home/services/auth_service.dart';
@@ -53,14 +55,21 @@ class WasteSorterRecordsDataState extends State<WasteSorterRecordsData> {
       },
     );
     _channel.stream.listen((message) {
-      if (_endDate.isAfter(DateTime.now())) {
+      final correctedMessage = message.replaceAll("'", '"');
+      final Map<String, dynamic> data = jsonDecode(correctedMessage);
+      final double? recyclableLevel = data['recyclable_level'] is double
+          ? data['recyclable_level']
+          : double.tryParse(data['recyclable_level'].toString());
+      final double? nonRecyclableLevel = data['non_recyclable_level'] is double
+          ? data['non_recyclable_level']
+          : double.tryParse(data['non_recyclable_level'].toString());
+
+      if (recyclableLevel != null && nonRecyclableLevel != null) {
         setState(() {
-          _recordsFuture = _fetchRecords(startDate: _startDate, endDate: _endDate);
+          _lastNonRecyclableLevel = nonRecyclableLevel;
+          _lastRecyclableLevel = recyclableLevel;
         });
       }
-      setState(() {
-        _latestRecordsFuture = _fetchLatestRecords();
-      });
     });
   }
 
@@ -77,10 +86,13 @@ class WasteSorterRecordsDataState extends State<WasteSorterRecordsData> {
 
     if (picked != null) {
       setState(() {
-        _startDate = DateTime(picked.start.year, picked.start.month, picked.start.day, 0, 0, 0);
-        _endDate = DateTime(picked.end.year, picked.end.month, picked.end.day, 23, 59, 59, 999);
+        _startDate = DateTime(
+            picked.start.year, picked.start.month, picked.start.day, 0, 0, 0);
+        _endDate = DateTime(
+            picked.end.year, picked.end.month, picked.end.day, 23, 59, 59, 999);
 
-        _recordsFuture = _fetchRecords(startDate: _startDate, endDate: _endDate);
+        _recordsFuture =
+            _fetchRecords(startDate: _startDate, endDate: _endDate);
       });
     }
   }
@@ -96,7 +108,7 @@ class WasteSorterRecordsDataState extends State<WasteSorterRecordsData> {
     );
 
     final recycleRecords =
-    data['recycleRecords'] as List<WasteSorterRecycleRecord>;
+        data['recycleRecords'] as List<WasteSorterRecycleRecord>;
     final levelRecords = data['levelRecords'] as List<WasteSorterLevelRecord>;
 
     setState(() {
@@ -178,7 +190,7 @@ class WasteSorterRecordsDataState extends State<WasteSorterRecordsData> {
                     );
                   } else {
                     final levelRecords = snapshot.data!['levelRecords']
-                    as List<WasteSorterLevelRecord>;
+                        as List<WasteSorterLevelRecord>;
                     return Row(
                       children: [
                         Expanded(
@@ -187,8 +199,7 @@ class WasteSorterRecordsDataState extends State<WasteSorterRecordsData> {
                             child: Padding(
                               padding: const EdgeInsets.all(12.0),
                               child: Column(
-                                crossAxisAlignment:
-                                CrossAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
@@ -197,7 +208,7 @@ class WasteSorterRecordsDataState extends State<WasteSorterRecordsData> {
                                         : 'N/A',
                                     style: TextStyle(
                                       color: _lastRecyclableLevel != null &&
-                                          _lastRecyclableLevel! > 80
+                                              _lastRecyclableLevel! > 80
                                           ? Colors.red
                                           : Colors.black,
                                       fontSize: 20,
@@ -224,8 +235,7 @@ class WasteSorterRecordsDataState extends State<WasteSorterRecordsData> {
                             child: Padding(
                               padding: const EdgeInsets.all(12.0),
                               child: Column(
-                                crossAxisAlignment:
-                                CrossAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
@@ -234,7 +244,7 @@ class WasteSorterRecordsDataState extends State<WasteSorterRecordsData> {
                                         : 'N/A',
                                     style: TextStyle(
                                       color: _lastNonRecyclableLevel != null &&
-                                          _lastNonRecyclableLevel! > 80
+                                              _lastNonRecyclableLevel! > 80
                                           ? Colors.red
                                           : Colors.black,
                                       fontSize: 20,
@@ -296,7 +306,7 @@ class WasteSorterRecordsDataState extends State<WasteSorterRecordsData> {
                       readOnly: true,
                       decoration: InputDecoration(
                         labelText:
-                        '${formatDate(_startDate.toLocal())} - ${formatDate(_endDate.toLocal())}',
+                            '${formatDate(_startDate.toLocal())} - ${formatDate(_endDate.toLocal())}',
                         suffixIcon: IconButton(
                           icon: const Icon(Icons.calendar_today,
                               color: Colors.green),
@@ -330,7 +340,7 @@ class WasteSorterRecordsDataState extends State<WasteSorterRecordsData> {
                     );
                   } else {
                     final levelRecords = recordsSnapshot.data!['levelRecords']
-                    as List<WasteSorterLevelRecord>;
+                        as List<WasteSorterLevelRecord>;
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -343,14 +353,14 @@ class WasteSorterRecordsDataState extends State<WasteSorterRecordsData> {
                                   padding: const EdgeInsets.all(12.0),
                                   child: Column(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.center,
+                                        CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Row(
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                            CrossAxisAlignment.center,
                                         mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                            MainAxisAlignment.center,
                                         children: [
                                           Padding(
                                             padding: const EdgeInsets.only(
@@ -368,12 +378,12 @@ class WasteSorterRecordsDataState extends State<WasteSorterRecordsData> {
                                             '(${(_recyclableCount / (_recycleRecordsCount == 0 ? 1 : _recycleRecordsCount) * 100).toStringAsFixed(0)}%)',
                                             style: TextStyle(
                                               color: (_recyclableCount /
-                                                  (_recycleRecordsCount ==
-                                                      0
-                                                      ? 1
-                                                      : _recycleRecordsCount) *
-                                                  100) <
-                                                  50
+                                                          (_recycleRecordsCount ==
+                                                                  0
+                                                              ? 1
+                                                              : _recycleRecordsCount) *
+                                                          100) <
+                                                      50
                                                   ? Colors.red
                                                   : Colors.green,
                                               fontSize: 20,

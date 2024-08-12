@@ -90,7 +90,8 @@ class HubScreenState extends State<HubScreen> {
         child: FutureBuilder<void>(
           future: _initializeFuture,
           builder: (context, initializationSnapshot) {
-            if (initializationSnapshot.connectionState == ConnectionState.waiting) {
+            if (initializationSnapshot.connectionState ==
+                ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
 
@@ -111,7 +112,8 @@ class HubScreenState extends State<HubScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.8, // Adjust height as needed
+                      height: MediaQuery.of(context).size.height *
+                          0.8, // Adjust height as needed
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -119,10 +121,13 @@ class HubScreenState extends State<HubScreen> {
                             child: FutureBuilder<bool>(
                               future: _isOnlineFuture,
                               builder: (context, snapshot) {
-                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
                                   return const CircularProgressIndicator();
                                 }
-                                if (snapshot.hasError || !snapshot.hasData || (snapshot.hasData && !snapshot.data!)) {
+                                if (snapshot.hasError ||
+                                    !snapshot.hasData ||
+                                    (snapshot.hasData && !snapshot.data!)) {
                                   return const Column(
                                     children: [
                                       Row(
@@ -136,13 +141,18 @@ class HubScreenState extends State<HubScreen> {
                                           SizedBox(width: 8),
                                           Text(
                                             'Hub is Offline',
-                                            style: TextStyle(fontSize: 18),
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                color: Colors.red),
                                           ),
                                         ],
                                       ),
                                       SizedBox(height: 40),
-                                      Text('Hub must be online to update credentials'),
-                                      Text('Reset hub and try again'),
+                                      Text(
+                                          'Hub must be online to update credentials.',
+                                          textAlign: TextAlign.center),
+                                      Text('Reset hub and try again!',
+                                          textAlign: TextAlign.center),
                                     ],
                                   );
                                 } else {
@@ -154,38 +164,52 @@ class HubScreenState extends State<HubScreen> {
                                         children: [
                                           Icon(
                                             Icons.circle,
-                                            color: isOnline ? Colors.green : Colors.red,
+                                            color: isOnline
+                                                ? Colors.green
+                                                : Colors.red,
                                             size: 24.0,
                                           ),
                                           const SizedBox(width: 8),
                                           Text(
-                                            isOnline ? 'Hub is Online' : 'Hub is Offline',
-                                            style: const TextStyle(fontSize: 18),
+                                            isOnline
+                                                ? 'Hub is Online'
+                                                : 'Hub is Offline',
+                                            style:
+                                                const TextStyle(fontSize: 18),
                                           ),
                                         ],
                                       ),
                                       const SizedBox(height: 40),
                                       if (isOnline)
                                         Container(
-                                          margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                                          margin: const EdgeInsets.symmetric(
+                                              horizontal: 20.0),
                                           padding: const EdgeInsets.all(10.0),
                                           decoration: BoxDecoration(
                                             border: Border.all(
-                                                color: Theme.of(context).colorScheme.secondary),
-                                            borderRadius: BorderRadius.circular(8.0),
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary),
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
                                           ),
                                           child: Column(
                                             children: [
                                               Align(
                                                 alignment: Alignment.centerLeft,
                                                 child: Container(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                                                  color: Theme.of(context).colorScheme.secondary,
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 10.0),
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
                                                   child: const Text(
                                                     'Hub Credentials',
                                                     style: TextStyle(
                                                       color: Colors.white,
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                       fontSize: 16,
                                                     ),
                                                   ),
@@ -197,12 +221,17 @@ class HubScreenState extends State<HubScreen> {
                                                 child: Column(
                                                   children: [
                                                     TextFormField(
-                                                      controller: _emailController,
-                                                      decoration: const InputDecoration(
-                                                          labelText: 'Email',
-                                                          border: OutlineInputBorder()),
+                                                      controller:
+                                                          _emailController,
+                                                      decoration:
+                                                          const InputDecoration(
+                                                              labelText:
+                                                                  'Email',
+                                                              border:
+                                                                  OutlineInputBorder()),
                                                       validator: (value) {
-                                                        if (value == null || value.isEmpty) {
+                                                        if (value == null ||
+                                                            value.isEmpty) {
                                                           return 'Please enter your email';
                                                         }
                                                         return null;
@@ -210,13 +239,18 @@ class HubScreenState extends State<HubScreen> {
                                                     ),
                                                     const SizedBox(height: 16),
                                                     TextFormField(
-                                                      controller: _passwordController,
-                                                      decoration: const InputDecoration(
-                                                          labelText: 'Password',
-                                                          border: OutlineInputBorder()),
+                                                      controller:
+                                                          _passwordController,
+                                                      decoration:
+                                                          const InputDecoration(
+                                                              labelText:
+                                                                  'Password',
+                                                              border:
+                                                                  OutlineInputBorder()),
                                                       obscureText: true,
                                                       validator: (value) {
-                                                        if (value == null || value.isEmpty) {
+                                                        if (value == null ||
+                                                            value.isEmpty) {
                                                           return 'Please enter your password';
                                                         }
                                                         return null;
@@ -224,13 +258,19 @@ class HubScreenState extends State<HubScreen> {
                                                     ),
                                                     const SizedBox(height: 20),
                                                     FilledButton(
-                                                      onPressed: _updateCredentials,
-                                                      style: FilledButton.styleFrom(
-                                                          minimumSize: const Size(160, 40)),
+                                                      onPressed:
+                                                          _updateCredentials,
+                                                      style: FilledButton
+                                                          .styleFrom(
+                                                              minimumSize:
+                                                                  const Size(
+                                                                      160, 40)),
                                                       child: const Text(
                                                         'Update Credentials',
                                                         style: TextStyle(
-                                                            fontWeight: FontWeight.normal,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal,
                                                             fontSize: 14),
                                                       ),
                                                     ),

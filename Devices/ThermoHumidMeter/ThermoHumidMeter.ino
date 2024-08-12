@@ -33,12 +33,13 @@ ESP8266WebServer server(80);
 bool apMode = false;
 
 // Function prototypes
+void handleSensorReading();
+void checkAndReconnectWiFi();
 void checkAndReconnectMQTT();
 void discoverMDNSService();
 void startAccessPoint();
 void stopAccessPoint();
 void handleNetworkCredentialsUpdate();
-void checkAndReconnectWiFi();
 
 void setup() {
   Serial.begin(9600);
@@ -64,12 +65,24 @@ void loop() {
   if (apMode) {
     server.handleClient(); // Handle HTTP requests in AP mode
   } else {
-    checkAndReconnectWiFi(); // Check and reconnect to WiFi if necessary
-    checkAndReconnectMQTT(); // Check and reconnect to MQTT if necessary
+    checkAndReconnectWiFi(); 
+    checkAndReconnectMQTT(); 
+    // If not connected to MQTT Broker , search Broker service with mDNS
+    if(WiFi.status() == WL_CONNECTED && !client.connected()){
+      Serial.println("Discovering services...");
+      discoverMDNSService();
+    }
 
     // MQTT loop
     client.loop();
 
+    handleSensorReading();
+
+    delay(10000);
+  }
+}
+
+void handleSensorReading(){
     // Read from sensor and publish data
     float temperature = dht_sensor.readTemperature();
     float humidity = dht_sensor.readHumidity();
@@ -83,9 +96,6 @@ void loop() {
       Serial.print("Thermo Humid Meter message: ");
       Serial.println(thermo_humid_message.c_str());
     }
-
-    delay(10000); // Wait 10 seconds between readings
-  }
 }
 
 void checkAndReconnectWiFi() {
@@ -140,13 +150,10 @@ void checkAndReconnectMQTT() {
           return;
         } else {
           Serial.print("Failed to connect to MQTT after 10 attempts. rc=");
-          Serial.print(client.state());
-          Serial.println(". Discovering services...");
-          discoverMDNSService();
+          Serial.println(client.state());
         }
       } else {
-        Serial.println("No MQTT broker details found. Discovering services...");
-        discoverMDNSService();
+        Serial.println("No MQTT broker details found.");
       }
     }
   }
@@ -181,7 +188,7 @@ void discoverMDNSService() {
         writeStringToEEPROM(EEPROM_MQTT_IP_ADDR, newMqttBrokerIp);
         writeIntToEEPROM(EEPROM_MQTT_PORT_ADDR, newMqttBrokerPort);
         EEPROM.commit();
-        break;
+        ESP.restart(); // Restart to apply new broker ip and port
       }
     }
   }

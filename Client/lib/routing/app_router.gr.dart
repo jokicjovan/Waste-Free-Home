@@ -10,6 +10,25 @@
 part of 'app_router.dart';
 
 /// generated route for
+/// [DeviceAPScreen]
+class DeviceAPRoute extends PageRouteInfo<void> {
+  const DeviceAPRoute({List<PageRouteInfo>? children})
+      : super(
+          DeviceAPRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'DeviceAPRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const DeviceAPScreen();
+    },
+  );
+}
+
+/// generated route for
 /// [DeviceDetailsScreen]
 class DeviceDetailsRoute extends PageRouteInfo<DeviceDetailsRouteArgs> {
   DeviceDetailsRoute({
