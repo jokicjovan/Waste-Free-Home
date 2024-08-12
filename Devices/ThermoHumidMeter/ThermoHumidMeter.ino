@@ -40,13 +40,19 @@ void discoverMDNSService();
 void startAccessPoint();
 void stopAccessPoint();
 void handleNetworkCredentialsUpdate();
+void writeStringToEEPROM(int startAddress, String data);
+String readStringFromEEPROM(int startAddress);
+void writeIntToEEPROM(int address, int value);
+int readIntFromEEPROM(int address);
 
 void setup() {
   Serial.begin(9600);
-  dht_sensor.begin();
   EEPROM.begin(512);
 
-  // Start Access Point if needed
+  // Init DHT22 sensor
+  dht_sensor.begin();
+
+  // Try connecting to WiFi
   checkAndReconnectWiFi();
 
   if (WiFi.status() == WL_CONNECTED) {
@@ -58,7 +64,6 @@ void setup() {
     Serial.println("WiFi not connected. mDNS cannot be initialized. Starting Access Point...");
     startAccessPoint();
   }
-
 }
 
 void loop() {
@@ -77,9 +82,8 @@ void loop() {
     client.loop();
 
     handleSensorReading();
-
-    delay(10000);
   }
+  delay(10000);
 }
 
 void handleSensorReading(){
