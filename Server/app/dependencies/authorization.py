@@ -4,7 +4,7 @@ from fastapi import Depends, status, HTTPException
 from jwt import InvalidTokenError
 from sqlalchemy.orm import Session
 
-from app.db.postgres import get_postgres_db
+from app.dependencies.database import get_regular_db
 from app.entities.enums import Role
 from app.entities.schemas import TokenData, RegularUser
 from app.core.tokens import oauth2_scheme, decode_access_token
@@ -13,7 +13,7 @@ from app.services.base_user_service import get_base_user_by_email
 
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],
-                           db: Annotated[Session, Depends(get_postgres_db)]):
+                           db: Annotated[Session, Depends(get_regular_db)]):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -57,7 +57,7 @@ def user_dependency(required_roles: List[Role]):
 
 def device_dependency(device_id: UUID,
                       current_user: Annotated[RegularUser, Depends(get_current_active_user)],
-                      db: Session = Depends(get_postgres_db)):
+                      db: Session = Depends(get_regular_db)):
     device = base_device_service.get_device(db, device_id)
     if device is None or device.owner_id != current_user.id:
         raise HTTPException(

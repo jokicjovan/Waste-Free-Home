@@ -9,17 +9,8 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
     devices_thumbnails_path: str = "static/devices/thumbnails/"
 
-    postgres_user: str
-    postgres_password: str
-    postgres_hostname: str
-    postgres_port: str
-    postgres_name: str
-
-    timescale_user: str
-    timescale_password: str
-    timescale_hostname: str
-    timescale_port: str
-    timescale_name: str
+    regular_database_url: str
+    time_series_database_url: str
 
     class Config:
         env_file = ".env"

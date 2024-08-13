@@ -24,6 +24,13 @@ def get_devices(db: Session, skip: int = 0, limit: int = 100):
             .limit(limit).all())
 
 
+def get_unlinked_devices(db: Session, skip: int = 0, limit: int = 100):
+    return (db.query(models.BaseDevice)
+            .filter(models.BaseDevice.owner_id == None)
+            .offset(skip)
+            .limit(limit).all())
+
+
 def get_user_devices(db: Session, user_id: UUID, skip: int = 0, limit: int = 100):
     return (db.query(models.BaseDevice)
             .filter(models.BaseDevice.owner_id == user_id)

@@ -175,19 +175,11 @@
 - **.env File**: Configure the following settings in the `.env` file for the Remote Server. The `.env` file should be located in the root directory of the Server project:
   - **PostgreSQL Configuration**:
     ```env
-    postgres_user=postgres_user
-    postgres_password=postgres_password
-    postgres_hostname=postgres_hostname
-    postgres_port=postgres_port
-    postgres_name=postgres_name
+    regular_database_url=postgresql://username:password@hostname:port/database_name
     ```
   - **TimescaleDB Configuration**:
     ```env
-    timescale_user=timescale_user
-    timescale_password=timescale_password
-    timescale_hostname=timescale_hostname
-    timescale_port=timescale_port
-    timescale_name=timescale_name
+    time_series_database_url=postgresql://username:password@hostname:port/database_name
     ```
   - **Optional**:
     ```env

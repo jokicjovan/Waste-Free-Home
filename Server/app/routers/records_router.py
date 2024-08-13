@@ -5,10 +5,9 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from fastapi.websockets import WebSocket, WebSocketDisconnect
 
-from app.core.authorization import device_dependency, get_current_user, get_current_active_user
+from app.dependencies.authorization import device_dependency, get_current_user, get_current_active_user
 from app.core.websockets import records_ws_manager
-from app.db.postgres import get_postgres_db
-from app.db.timescale import get_timescale_db
+from app.dependencies.database import get_regular_db, get_time_series_db
 from app.entities.schemas import Device
 from app.services import records_service
 
@@ -24,8 +23,8 @@ records_lists_response_model = Dict[str, Union[tuple(List[schema] for schema in 
                      response_model=records_response_model)
 async def create_device_records(current_device: Annotated[Device, Depends(device_dependency)],
                                 record: records_response_model,
-                                models_db: Session = Depends(get_postgres_db),
-                                time_series_db: Session = Depends(get_timescale_db)):
+                                models_db: Session = Depends(get_regular_db),
+                                time_series_db: Session = Depends(get_time_series_db)):
     db_record = await records_service.record_device_data(models_db, time_series_db, current_device.id, record)
     if db_record is None:
         raise HTTPException(status_code=400, detail="Bad request")
@@ -40,8 +39,8 @@ async def create_device_records(current_device: Annotated[Device, Depends(device
 @records_router.get(records_router_root_path + "/{device_id}", tags=["Records"],
                     response_model=records_lists_response_model)
 async def get_device_records(current_device: Annotated[Device, Depends(device_dependency)],
-                             models_db: Session = Depends(get_postgres_db),
-                             time_series_db: Session = Depends(get_timescale_db),
+                             models_db: Session = Depends(get_regular_db),
+                             time_series_db: Session = Depends(get_time_series_db),
                              limit: int = 100,
                              skip: int = 0,
                              start_date: Optional[datetime] = None,
@@ -65,7 +64,7 @@ async def device_records_websocket(websocket: WebSocket, device_id: uuid.UUID):
         token = token[7:]
 
     # Get database session
-    db = next(get_postgres_db())
+    db = next(get_regular_db)
     try:
         # Check client authorization
         current_user = await get_current_user(token=token, db=db)

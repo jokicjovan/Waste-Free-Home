@@ -6,10 +6,10 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from app.core.authorization import user_dependency
+from app.dependencies.authorization import user_dependency
 from app.core.config import settings
 from app.core.tokens import create_access_token
-from app.db.postgres import get_postgres_db
+from app.dependencies.database import get_regular_db
 from app.entities.enums import Role
 from app.entities.models import BaseUser
 from app.entities.schemas import Token
@@ -20,7 +20,7 @@ auth_router_root_path = "/API/auth"
 
 
 @auth_router.post(auth_router_root_path + "/token", tags=["Auth"], response_model=Token)
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_postgres_db)):
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_regular_db)):
     user = authenticate_base_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(

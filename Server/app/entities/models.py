@@ -5,10 +5,10 @@ from sqlalchemy.orm import relationship, declarative_base
 
 from app.entities.enums import DeviceType, Role
 
-postgres_base = declarative_base()
+regular_db_base = declarative_base()
 
 
-class BaseUser(postgres_base):
+class BaseUser(regular_db_base):
     __tablename__ = "users"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, nullable=False)
@@ -35,7 +35,7 @@ class Admin(BaseUser):
     }
 
 
-class BaseDevice(postgres_base):
+class BaseDevice(regular_db_base):
     __tablename__ = "devices"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, nullable=False)

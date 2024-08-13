@@ -4,10 +4,10 @@ from sqlalchemy.orm import declarative_base
 
 from app.entities.enums import WasteType
 
-timescale_base = declarative_base()
+time_series_db_base = declarative_base()
 
 
-class ThermoHumidMeterRecord(timescale_base):
+class ThermoHumidMeterRecord(time_series_db_base):
     __tablename__ = "thermo_humid_meter"
 
     timestamp = Column(TIMESTAMP, primary_key=True, server_default=func.now())
@@ -16,7 +16,7 @@ class ThermoHumidMeterRecord(timescale_base):
     humidity = Column(Float, nullable=False)
 
 
-class WasteSorterRecycleRecord(timescale_base):
+class WasteSorterRecycleRecord(time_series_db_base):
     __tablename__ = "waste_sorter_recycle"
 
     timestamp = Column(TIMESTAMP, primary_key=True, server_default=func.now())
@@ -24,7 +24,7 @@ class WasteSorterRecycleRecord(timescale_base):
     waste_type = Column(Enum(WasteType), nullable=False)
 
 
-class WasteSorterLevelRecord(timescale_base):
+class WasteSorterLevelRecord(time_series_db_base):
     __tablename__ = "waste_sorter_level"
 
     timestamp = Column(TIMESTAMP, primary_key=True, server_default=func.now())

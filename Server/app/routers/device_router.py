@@ -7,12 +7,12 @@ from sqlalchemy.orm import Session
 from fastapi.responses import StreamingResponse, FileResponse
 
 from app.core import utils
-from app.core.validations import validate_thumbnail
-from app.db.postgres import get_postgres_db
+from app.dependencies.validations import validate_thumbnail
+from app.dependencies.database import get_regular_db
 from app.entities import schemas
 from app.entities.enums import Role, DeviceType
 from app.entities.schemas import RegularUser, Device, Admin
-from app.core.authorization import user_dependency, device_dependency
+from app.dependencies.authorization import user_dependency, device_dependency
 from app.services import base_device_service, image_service
 
 device_router = APIRouter()
@@ -26,7 +26,7 @@ async def create_device(
         description: str = Form(...),
         type: DeviceType = Form(...),
         thumbnail: Optional[UploadFile] = Depends(validate_thumbnail),
-        db: Session = Depends(get_postgres_db)
+        db: Session = Depends(get_regular_db)
 ):
     device_schema = schemas.DeviceCreate(title=title, description=description, type=type)
     db_device = base_device_service.create_device(db=db, device_schema=device_schema)
@@ -42,19 +42,19 @@ async def create_device(
     return StreamingResponse(buf, media_type="image/png")
 
 
-@device_router.get(device_router_root_path, tags=["Devices"], response_model=list[schemas.Device])
-async def read_all_devices(current_user: Annotated[RegularUser, Depends(user_dependency([Role.ADMIN]))],
-                           db: Session = Depends(get_postgres_db),
+@device_router.get(device_router_root_path + "/unlinked", tags=["Devices"], response_model=list[schemas.Device])
+async def read_all_unlinked_devices(current_user: Annotated[RegularUser, Depends(user_dependency([Role.ADMIN]))],
+                           db: Session = Depends(get_regular_db),
                            limit: int = 100,
                            skip: int = 0):
-    devices = base_device_service.get_devices(db, skip=skip, limit=limit)
+    devices = base_device_service.get_unlinked_devices(db, skip=skip, limit=limit)
     return devices
 
 
 @device_router.get(device_router_root_path + "/me", tags=["Devices"], response_model=list[schemas.Device])
 async def read_all_user_devices(
         current_user: Annotated[RegularUser, Depends(user_dependency([Role.REGULAR_USER]))],
-        db: Session = Depends(get_postgres_db),
+        db: Session = Depends(get_regular_db),
         skip: int = 0,
         limit: int = 100, ):
     devices = base_device_service.get_user_devices(db, skip=skip, limit=limit, user_id=current_user.id)
@@ -70,7 +70,7 @@ async def read_device(current_device: Annotated[Device, Depends(device_dependenc
 async def update_device(
         current_device: Annotated[Device, Depends(device_dependency)],
         device_schema: schemas.DeviceUpdate,
-        db: Session = Depends(get_postgres_db)):
+        db: Session = Depends(get_regular_db)):
     return base_device_service.update_device(db=db, device_id=current_device.id, device_schema=device_schema)
 
 
@@ -78,7 +78,7 @@ async def update_device(
 async def link_with_device(
         current_user: Annotated[RegularUser, Depends(user_dependency([Role.REGULAR_USER]))],
         device_id: UUID,
-        db: Session = Depends(get_postgres_db)
+        db: Session = Depends(get_regular_db)
 ):
     device = base_device_service.link_device_to_user(db=db, device_id=device_id, user_id=current_user.id)
     if device is None:
@@ -101,7 +101,7 @@ async def read_device_thumbnail(
 @device_router.post(device_router_root_path + "/{device_id}/toggle", tags=["Devices"], response_model=schemas.Device)
 async def toggle_device_state(current_device: Annotated[Device, Depends(device_dependency)],
                               is_online: bool = Query(...),
-                              db: Session = Depends(get_postgres_db)):
+                              db: Session = Depends(get_regular_db)):
     db_device = base_device_service.toggle_device(db, current_device.id, is_online)
     if not db_device:
         raise HTTPException(status_code=500, detail="Failed to turn on device")
