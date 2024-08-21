@@ -39,7 +39,7 @@ void checkAndReconnectMQTT();
 void discoverMDNSService();
 void startAccessPoint();
 void stopAccessPoint();
-void handleNetworkCredentialsUpdate();
+void handleWiFiCredentialsUpdate();
 void writeStringToEEPROM(int startAddress, String data);
 String readStringFromEEPROM(int startAddress);
 void writeIntToEEPROM(int address, int value);
@@ -61,7 +61,7 @@ void setup() {
     }
   } else {
     // Handle the case where WiFi connection failed or is not available
-    Serial.println("WiFi not connected. mDNS cannot be initialized. Starting Access Point...");
+    Serial.println("WiFi not connected. mDNS cannot be initialized.");
     startAccessPoint();
   }
 }
@@ -199,12 +199,26 @@ void discoverMDNSService() {
 }
 
 void startAccessPoint() {
-  server.on("/API/health", HTTP_GET, handleHealthCheck);
-  server.on("/API/network-credentials", HTTP_POST, handleNetworkCredentialsUpdate);
-  server.begin();
-  WiFi.softAP("THERMO_HUMID_METER_AP");
-  Serial.println("Access Point Started. Connect to 'THERMO_HUMID_METER_AP' and access http://192.168.4.1/API/network-credentials to set WiFi credentials.");
-  apMode = true;
+   // Stop any existing WiFi connection
+  WiFi.disconnect(true);  
+  delay(100);
+
+  // Start the Access Point
+  if (WiFi.softAP("THERMO_HUMID_METER_AP")) {
+      Serial.println("Access Point Started.");
+      Serial.println("Connect to 'THERMO_HUMID_METER_AP' and access http://192.168.4.1/API/wifi-credentials to set WiFi credentials.");
+
+      delay(500);
+
+      server.on("/API/health", HTTP_GET, handleHealthCheck);
+      server.on("/API/wifi-credentials", HTTP_POST, handleWiFiCredentialsUpdate);
+      server.begin();
+
+      apMode = true;
+  } else {
+      Serial.println("Failed to start Access Point.");
+      apMode = false;
+  }
 }
 
 void stopAccessPoint() {
@@ -219,7 +233,7 @@ void handleHealthCheck() {
   server.send(200, "text/plain", "ok");
 }
 
-void handleNetworkCredentialsUpdate() {
+void handleWiFiCredentialsUpdate() {
   if (server.hasArg("ssid") && server.hasArg("password")) {
     String ssid = server.arg("ssid");
     String password = server.arg("password");

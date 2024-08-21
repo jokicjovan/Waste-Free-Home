@@ -1,9 +1,11 @@
+import socket
+
 from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
     hub_id: str
-    hub_hostname: str
+    hub_hostname: str = socket.gethostbyname(socket.gethostname())
     http_port: int
     mqtt_broker_port: int
     mqtt_username: str
