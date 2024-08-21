@@ -22,11 +22,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
       darkTheme: darkTheme,
-      //Color.fromRGBO(101, 157, 82, 1.0)
-      //Color.fromRGBO(47, 95, 73, 1.0)
-      //Color.fromRGBO(21, 59, 48, 1.0)
-
-      //Color.fromRGBO(248, 237, 194, 1.0)
     );
   }
 }

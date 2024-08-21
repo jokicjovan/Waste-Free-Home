@@ -32,7 +32,6 @@ async def create_device_records(current_device: Annotated[Device, Depends(device
     ws_message = record.__class__(**db_record.__dict__).model_dump()
     ws_message['timestamp'] = ws_message['timestamp'].isoformat()
     await records_ws_manager.broadcast(current_device.id, str(ws_message))
-
     return db_record
 
 

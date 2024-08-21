@@ -11,9 +11,9 @@ ThemeData lightTheme = ThemeData(
     color: Color.fromRGBO(47, 95, 73, 1.0),
     iconTheme: IconThemeData(color: Colors.white),
   ),
-  colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromRGBO(101, 157, 82, 1.0)),
+  colorScheme:
+      ColorScheme.fromSeed(seedColor: const Color.fromRGBO(101, 157, 82, 1.0)),
 );
-
 
 ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
