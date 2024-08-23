@@ -141,7 +141,6 @@
   - **Hub**:
     ```env
     hub_id=hub_uuid
-    hub_hostname=hub_hostname
     ```
   - **Its HTTP server information**
     ```env
@@ -162,6 +161,7 @@
     ```
   - **Optional**:
     ```env
+    hub_hostname=hub_hostname
     device_record_topic=device/+/record
     device_state_topic=device/+/state
     server_devices_endpoint=API/devices
