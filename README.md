@@ -243,10 +243,6 @@
   const char* mqtt_username = "mqtt_username";
   const char* mqtt_password = "mqtt_password";
 
-  // Network
-  const char* ssid = "ssid";
-  const char* password = "password";
-
   #endif
   ```
 
@@ -261,10 +257,6 @@
     // MQTT
     const char* mqtt_username = "mqtt_username";
     const char* mqtt_password = "mqtt_password";
-
-    // Network
-    const char* ssid = "ssid";
-    const char* password = "password";
 
     #endif
     ```
