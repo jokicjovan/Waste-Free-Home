@@ -53,7 +53,9 @@ async def get_device_records(current_device: Annotated[Device, Depends(device_de
 
 
 @records_router.websocket(records_router_root_path + "/{device_id}")
-async def device_records_websocket(websocket: WebSocket, device_id: uuid.UUID):
+async def device_records_websocket(websocket: WebSocket,
+                                   device_id: uuid.UUID,
+                                   db: Session = Depends(get_regular_db)):
     # Get token from headers
     token = websocket.headers.get('Authorization')
     if not token:
@@ -62,8 +64,6 @@ async def device_records_websocket(websocket: WebSocket, device_id: uuid.UUID):
     if token.startswith("Bearer "):
         token = token[7:]
 
-    # Get database session
-    db = next(get_regular_db)
     try:
         # Check client authorization
         current_user = await get_current_user(token=token, db=db)

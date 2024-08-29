@@ -26,7 +26,6 @@ class MDNSService:
             name="WasteFreeHomeMQTTBroker._mqtt._tcp.local.",
             addresses=[socket.inet_aton(settings.hub_hostname)],
             port=settings.mqtt_broker_port,
-            properties=desc,
             server="waste-free-home-mqtt-broker.local."
         )
         self.zeroconf.register_service(self.http_hub_service_info, ttl=3600)

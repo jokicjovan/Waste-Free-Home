@@ -31,7 +31,6 @@ class AuthService {
         },
       ),
     );
-
     if (response.statusCode != 200) throw Exception("Failed to login");
 
     final token = response.data['access_token'];

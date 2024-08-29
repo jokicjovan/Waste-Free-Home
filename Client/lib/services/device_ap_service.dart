@@ -27,7 +27,7 @@ class DeviceAPService {
   Future<void> updateNetworkCredentials(String ssid, String password) async {
     try {
       final response = await _dio.post(
-        '/network-credentials',
+        '/wifi-credentials',
         queryParameters: {
           'ssid': ssid,
           'password': password,
