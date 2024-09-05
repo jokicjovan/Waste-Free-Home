@@ -66,8 +66,13 @@
     - **Note**: Currently, FastAPI servers are not set up to work in Docker, so do steps 4. and 5. from the next section (Running Individual Services).
 
 3. **ESP32/ESP8266**
+    - Connect sensors and modules to microcontrollers
+      ![Waste Sorter Schema](docs/images/waste_sorter.png)
+      ![Thermo Humid Meter Schema](docs/images/thermo_humid_meter.png)
     - Open the Arduino IDE.
-    - Load and upload the respective .ino files to your ESP32/ESP8266 modules.
+    - Load .ino files for Waste Sorter and Thermo Humid Meter 
+    - Update pins if needed 
+    - Upload the respective .ino files to your ESP32/ESP8266 microcontrollers.
 
 4. **Flutter App**
     - Navigate to the Flutter app directory
@@ -204,7 +209,7 @@
     server_records_endpoint=/API/records
     ```
 
-### Mosquitto Configuration
+### Mosquitto
 
 #### `passwd` File
 - **Location**: Typically located at `/etc/mosquitto/passwd`.
@@ -229,7 +234,7 @@
     protocol mqtt
     ```
 
-### Arduino Configurations 
+### Arduino 
 - **Note**: The `config.h` files should be located in the same directory as their respective `.ino` files for proper configuration.
 - **config.h in WasteSorter**
   ```cpp
