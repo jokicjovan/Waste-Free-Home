@@ -282,10 +282,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Arduino**: For the development environment used with ESP32 and ESP8266.
 
 ## App Screenshots
-| ![login screen](docs/images/login_screen.png) | ![my devices screen](docs/images/my_devices_screen.png) | ![hub screen online](docs/images/hub_screen_online.png) | ![device ap online](docs/images/device_ap_online.png) |
+| ![login screen](docs/images/login_screen.png) | ![my devices screen](docs/images/my_devices_screen.png) | ![qr scan](docs/images/qr_scan_screen.jpg) | ![thermo humid meter screen 1](docs/images/thermo_humid_meter_screen_1.png) |
 |:--:|:--:|:--:|:--:|
-| *Login* | *My devices* | *Hub* | *Device AP* |
+| *Login* | *My devices* | *Device link* | *Thermo Humid Meter* |
 
-| ![thermo humid_meter screen 1](docs/images/thermo_humid_meter_screen_1.png) | ![thermo humid meter screen 2](docs/images/thermo_humid_meter_screen_2.png) | ![calendar](docs/images/calendar.png) | ![waste sorter screen](docs/images/waste_sorter_screen_1.png) |
+| ![thermo humid meter screen 2](docs/images/thermo_humid_meter_screen_2.png) | ![calendar](docs/images/calendar.png) | ![thermo humid meter screen 3](docs/images/thermo_humid_meter_screen_3.png) | ![waste sorter screen](docs/images/waste_sorter_screen_1.png)  | 
 |:--:|:--:|:--:|:--:|
-| *Thermo Humid Meter* | *Thermo Humid Meter* | *Calendar* | *Waste Sorter* |
+| *Thermo Humid Meter* | *Calendar* | *Thermo Humid Meter* | *Waste Sorter* |
+
+| ![edit device screen](docs/images/edit_device_screen.png) | ![hub screen online](docs/images/hub_screen_online.png) | ![device ap online](docs/images/device_ap_online.png) | ![device ap offline](docs/images/device_ap_offline.png) |
+|:--:|:--:|:--:|:--:|
+| *Edit Device* | *Hub* | *Device AP* | *Device AP* |
