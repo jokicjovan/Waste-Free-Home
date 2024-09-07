@@ -67,8 +67,9 @@
 
 3. **ESP32/ESP8266**
     - Connect sensors and modules to microcontrollers
-      ![Waste Sorter Schema](docs/images/waste_sorter.png)
-      ![Thermo Humid Meter Schema](docs/images/thermo_humid_meter.png)
+      | ![Waste Sorter Schema](docs/images/waste_sorter.png) | ![Thermo Humid Meter Schema](docs/images/thermo_humid_meter.png) |
+      |:--:|:--:|
+      | *Waste Sorter* | *Thermo Humid Meter* |
     - Open the Arduino IDE.
     - Load .ino files for Waste Sorter and Thermo Humid Meter 
     - Update pins if needed 
