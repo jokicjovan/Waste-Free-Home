@@ -13,6 +13,7 @@
 - **Cross-Platform**: Includes a mobile app developed with Flutter for Android and potentially other platforms.
 
 ## Components
+![Components diagram](docs/images/components_diagram.png)
 
 ### 1. Local Hub (Home Server)
 - **MQTT Broker (Mosquitto)**: Handles MQTT messages exchanged between devices and the local FastAPI server.
