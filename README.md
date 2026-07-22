@@ -1,5 +1,7 @@
 # Waste-Free Home
 
+> Bachelor thesis project — Faculty of Technical Sciences, University of Novi Sad.
+
 ## Overview
 
 **Waste-Free Home** is an IoT system designed to create a "green" home with various environmentally friendly devices. The project integrates multiple components, including an MQTT broker, two FastAPI servers, and a Flutter app, to provide a comprehensive solution for managing and monitoring different types of devices in a sustainable home environment.
@@ -282,6 +284,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Flutter**: For the cross-platform mobile app development framework.
 - **Arduino**: For the development environment used with ESP32 and ESP8266.
 
+## Hardware
+
+| ![devices](docs/images/devices_live.jpg) | ![hub](docs/images/raspberry_pi_1.jpg) |
+|:--:|:--:|
+| *Assembled devices* | *Local hub (Raspberry Pi)* |
+
 ## App Screenshots
 | ![login screen](docs/images/login_screen.png) | ![my devices screen](docs/images/my_devices_screen.png) | ![qr scan](docs/images/qr_scan_screen.jpg) | ![thermo humid meter screen 1](docs/images/thermo_humid_meter_screen_1.png) |
 |:--:|:--:|:--:|:--:|
@@ -294,3 +302,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 | ![edit device screen](docs/images/edit_device_screen.png) | ![hub screen online](docs/images/hub_screen_online.png) | ![device ap online](docs/images/device_ap_online.png) | ![device ap offline](docs/images/device_ap_offline.png) |
 |:--:|:--:|:--:|:--:|
 | *Edit Device* | *Hub* | *Device AP* | *Device AP* |
+
+## Author
+
+- [Jovan Jokić](https://github.com/jokicjovan)
